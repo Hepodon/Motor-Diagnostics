@@ -3,131 +3,95 @@
 #include "pros/misc.h"
 
 using namespace pros;
-using namespace std;
 
 Controller conInput(E_CONTROLLER_MASTER);
-Motor P1Motor(1);
-Motor P2Motor(2);
-Motor P3Motor(3);
-Motor P4Motor(4);
-Motor P5Motor(5);
-Motor P6Motor(6);
-Motor P7Motor(7);
-Motor P8Motor(8);
-Motor P9Motor(9);
-Motor P10Motor(10);
-Motor P11Motor(11);
-Motor P12Motor(12);
-Motor P13Motor(13);
-Motor P14Motor(14);
-Motor P15Motor(15);
-Motor P16Motor(16);
-Motor P17Motor(17);
-Motor P18Motor(18);
-Motor P19Motor(19);
-Motor P20Motor(20);
+Motor motors[20] = {Motor(1),  Motor(2),  Motor(3),  Motor(4),  Motor(5),
+                    Motor(6),  Motor(7),  Motor(8),  Motor(9),  Motor(10),
+                    Motor(11), Motor(12), Motor(13), Motor(14), Motor(15),
+                    Motor(16), Motor(17), Motor(18), Motor(19), Motor(20)};
 
-lv_obj_t *P1Motor_Label, *P2Motor_Label, *P3Motor_Label, *P4Motor_Label,
-    *P5Motor_Label, *P6Motor_Label, *P7Motor_Label, *P8Motor_Label,
-    *P9Motor_Label, *P10Motor_Label, *P11Motor_Label, *P12Motor_Label,
-    *P13Motor_Label, *P14Motor_Label, *P15Motor_Label, *P16Motor_Label,
-    *P17Motor_Label, *P18Motor_Label, *P19Motor_Label, *P20Motor_Label;
-lv_obj_t *P1Motor_RPM, *P2Motor_RPM, *P3Motor_RPM, *P4Motor_RPM, *P5Motor_RPM,
-    *P6Motor_RPM, *P7Motor_RPM, *P8Motor_RPM, *P9Motor_RPM, *P10Motor_RPM,
-    *P11Motor_RPM, *P12Motor_RPM, *P13Motor_RPM, *P14Motor_RPM, *P15Motor_RPM,
-    *P16Motor_RPM, *P17Motor_RPM, *P18Motor_RPM, *P19Motor_RPM, *P20Motor_RPM;
-lv_obj_t *P1Motor_Temp, *P2Motor_Temp, *P3Motor_Temp, *P4Motor_Temp,
-    *P5Motor_Temp, *P6Motor_Temp, *P7Motor_Temp, *P8Motor_Temp, *P9Motor_Temp,
-    *P10Motor_Temp, *P11Motor_Temp, *P12Motor_Temp, *P13Motor_Temp,
-    *P14Motor_Temp, *P15Motor_Temp, *P16Motor_Temp, *P17Motor_Temp,
-    *P18Motor_Temp, *P19Motor_Temp, *P20Motor_Temp;
+int selectedPort = 1;
+lv_obj_t *title, *motorLabel, *motorRPM, *motorTemp, *motorPower, *motorEff;
 
-void create_Motor_UI(int Port) {
-  lv_obj_t *title = lv_label_create(lv_scr_act());
+// Function to create the UI for the selected motor
+void create_Motor_UI() {
+  lv_obj_clean(lv_scr_act()); // Clear the screen before updating
+
+  title = lv_label_create(lv_scr_act());
   lv_label_set_text(title, "Motor Status");
   lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
-  if (Port == 1) {
-    P1Motor_Label = lv_label_create(lv_scr_act());
-    lv_label_set_text(P1Motor_Label, "Port 1");
-    lv_obj_align(P1Motor_Label, LV_ALIGN_TOP_LEFT, 10, 50);
-    P1Motor_RPM = lv_label_create(lv_scr_act());
-    lv_label_set_text(P1Motor_RPM, "RPM: ");
-    lv_obj_align(P1Motor_RPM, LV_ALIGN_TOP_LEFT, 10, 100);
-    P1Motor_Temp = lv_label_create(lv_scr_act());
-    lv_label_set_text(P1Motor_Temp, "Temp: ");
-    lv_obj_align(P1Motor_Temp, LV_ALIGN_TOP_LEFT, 10, 150);
+
+  motorLabel = lv_label_create(lv_scr_act());
+  std::string motorText = "Port " + std::to_string(selectedPort);
+  lv_label_set_text(motorLabel, motorText.c_str());
+  lv_obj_align(motorLabel, LV_ALIGN_TOP_MID, 0, 40);
+
+  // Check if motor is connected by verifying temperature reading
+  if (motors[selectedPort - 1].get_temperature() == PROS_ERR_F) {
+    lv_label_set_text(motorLabel, ("Port " + std::to_string(selectedPort) +
+                                   ": No motor connected")
+                                      .c_str());
+    return;
   }
-  if (Port == 2) {
-    P2Motor_Label = lv_label_create(lv_scr_act());
-    lv_label_set_text(P2Motor_Label, "Port 2");
-    lv_obj_align(P2Motor_Label, LV_ALIGN_TOP_LEFT, 10, 50);
-    P2Motor_RPM = lv_label_create(lv_scr_act());
-    lv_label_set_text(P2Motor_RPM, "RPM: ");
-    lv_obj_align(P2Motor_RPM, LV_ALIGN_TOP_LEFT, 10, 100);
-    P2Motor_Temp = lv_label_create(lv_scr_act());
-    lv_label_set_text(P2Motor_Temp, "Temp: ");
-    lv_obj_align(P2Motor_Temp, LV_ALIGN_TOP_LEFT, 10, 150);
-  }
-  if (Port == 3) {
-	P3Motor_Label = lv_label_create(lv_scr_act());
-	lv_label_set_text(P3Motor_Label, "Port 3");
-	lv_obj_align(P3Motor_Label, LV_ALIGN_TOP_LEFT, 10, 50);
-	P3Motor_RPM = lv_label_create(lv_scr_act());
-	lv_label_set_text(P3Motor_RPM, "RPM: ");
-	lv_obj_align(P3Motor_RPM, LV_ALIGN_TOP_LEFT, 10, 100);
-	P3Motor_Temp = lv_label_create(lv_scr_act());
-	lv_label_set_text(P3Motor_Temp, "Temp: ");
-	lv_obj_align(P3Motor_Temp, LV_ALIGN_TOP_LEFT, 10, 150);
-  }
-  if (Port == 4) {
-	P4Motor_Label = lv_label_create(lv_scr_act());
-	lv_label_set_text(P4Motor_Label, "Port 4");
-	lv_obj_align(P4Motor_Label, LV_ALIGN_TOP_LEFT, 10, 50);
-	P4Motor_RPM = lv_label_create(lv_scr_act());
-	lv_label_set_text(P4Motor_RPM, "RPM: ");
-	lv_obj_align(P4Motor_RPM, LV_ALIGN_TOP_LEFT, 10, 100);
-	P4Motor_Temp = lv_label_create(lv_scr_act());
-	lv_label_set_text(P4Motor_Temp, "Temp: ");
-	lv_obj_align(P4Motor_Temp, LV_ALIGN_TOP_LEFT, 10, 150);
-  }
-  if (Port == 5) {
-	P5Motor_Label = lv_label_create(lv_scr_act());
-	lv_label_set_text(P5Motor_Label, "Port 5");
-	lv_obj_align(P5Motor_Label, LV_ALIGN_TOP_LEFT, 10, 50);
-	P5Motor_RPM = lv_label_create(lv_scr_act());
-	lv_label_set_text(P5Motor_RPM, "RPM: ");
-	lv_obj_align(P5Motor_RPM, LV_ALIGN_TOP_LEFT, 10, 100);
-	P5Motor_Temp = lv_label_create(lv_scr_act());
-	lv_label_set_text(P5Motor_Temp, "Temp: ");
-	lv_obj_align(P5Motor_Temp, LV_ALIGN_TOP_LEFT, 10, 150);
-  }
+
+  motorRPM = lv_label_create(lv_scr_act());
+  lv_label_set_text(motorRPM, "RPM: ");
+  lv_obj_align(motorRPM, LV_ALIGN_TOP_LEFT, 10, 80);
+
+  motorTemp = lv_label_create(lv_scr_act());
+  lv_label_set_text(motorTemp, "Temp: ");
+  lv_obj_align(motorTemp, LV_ALIGN_TOP_LEFT, 10, 120);
+
+  motorPower = lv_label_create(lv_scr_act());
+  lv_label_set_text(motorPower, "Power: ");
+  lv_obj_align(motorPower, LV_ALIGN_TOP_LEFT, 10, 160);
+
+  motorEff = lv_label_create(lv_scr_act());
+  lv_label_set_text(motorEff, "Efficiency: ");
+  lv_obj_align(motorEff, LV_ALIGN_TOP_LEFT, 10, 200);
 }
 
-void initialize() { lv_init(); }
+// Function to update the motor data
+void update_Motor_Data() {
+  if (motors[selectedPort - 1].get_temperature() == PROS_ERR_F)
+    return;
 
-void disabled() {}
+  char buffer[50];
 
-void competition_initialize() {}
+  sprintf(buffer, "RPM: %.1f", motors[selectedPort - 1].get_actual_velocity());
+  lv_label_set_text(motorRPM, buffer);
 
-void autonomous() {}
+  sprintf(buffer, "Temp: %.1fC", motors[selectedPort - 1].get_temperature());
+  lv_label_set_text(motorTemp, buffer);
+
+  sprintf(buffer, "Power: %.1fW", motors[selectedPort - 1].get_power());
+  lv_label_set_text(motorPower, buffer);
+
+  sprintf(buffer, "Efficiency: %.1f%%",
+          motors[selectedPort - 1].get_efficiency());
+  lv_label_set_text(motorEff, buffer);
+}
+
+void initialize() {
+  lv_init();
+  create_Motor_UI();
+}
 
 void opcontrol() {
   while (true) {
-    int selectedPort = 1;
-    create_Motor_UI(selectedPort);
+    update_Motor_Data();
     lv_task_handler();
+
     if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_RIGHT)) {
-      selectedPort++;
-      if (selectedPort > 20) {
-        selectedPort = 20;
-      }
+      selectedPort = (selectedPort < 20) ? selectedPort + 1 : 1;
+      create_Motor_UI();
     }
+
     if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_LEFT)) {
-      selectedPort--;
-      if (selectedPort < 1) {
-        selectedPort = 1;
-      }
+      selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
+      create_Motor_UI();
     }
-    delay(10);
+
+    pros::delay(100);
   }
 }
