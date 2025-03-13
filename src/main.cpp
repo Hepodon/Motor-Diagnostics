@@ -1,5 +1,11 @@
 #include "main.h"
+#include "liblvgl/core/lv_disp.h"
+#include "liblvgl/core/lv_event.h"
 #include "liblvgl/core/lv_obj.h"
+#include "liblvgl/core/lv_obj_pos.h"
+#include "liblvgl/core/lv_obj_style.h"
+#include "liblvgl/misc/lv_area.h"
+#include "liblvgl/widgets/lv_label.h"
 #include "pros/misc.h"
 
 using namespace pros;
@@ -12,10 +18,30 @@ Motor motors[20] = {Motor(1),  Motor(2),  Motor(3),  Motor(4),  Motor(5),
 
 int selectedPort = 1;
 lv_obj_t *title, *motorLabel, *motorRPM, *motorTemp, *motorPower, *motorEff;
+int speed = 0;
+static void MotorSpeedUp(lv_event_t *e) { speed++; }
+static void MotorSpeedDown(lv_event_t *e) { speed--; }
 
 // Function to create the UI for the selected motor
 void create_Motor_UI() {
   lv_obj_clean(lv_scr_act()); // Clear the screen before updating
+  lv_obj_t *label;
+  lv_obj_t *SpdUPButton = lv_obj_create(lv_scr_act()),
+           *SpdDOWNButton = lv_obj_create(lv_scr_act());
+  lv_obj_align(SpdUPButton, LV_ALIGN_TOP_LEFT, 320, 80);
+  lv_obj_align(SpdDOWNButton, LV_ALIGN_TOP_LEFT, 320, 160);
+  lv_obj_set_size(SpdUPButton, 95, 75);
+  lv_obj_set_size(SpdDOWNButton, 95, 75);
+  lv_obj_set_style_radius(SpdUPButton, 5, 0);
+  lv_obj_set_style_radius(SpdDOWNButton, 5, 0);
+  lv_obj_add_event_cb(SpdUPButton, MotorSpeedUp, LV_EVENT_PRESSING, NULL);
+  lv_obj_add_event_cb(SpdDOWNButton, MotorSpeedDown, LV_EVENT_PRESSING, NULL);
+  label = lv_label_create(SpdUPButton);
+  lv_label_set_text(label, "UP");
+  lv_obj_center(label);
+  label = lv_label_create(SpdDOWNButton);
+  lv_label_set_text(label, "DOWN");
+  lv_obj_center(label);
 
   title = lv_label_create(lv_scr_act());
   lv_label_set_text(title, "Motor Status");
@@ -91,6 +117,7 @@ void opcontrol() {
       selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
       create_Motor_UI();
     }
+    motors[selectedPort].move(speed);
 
     pros::delay(50);
   }
