@@ -92,6 +92,6 @@ void opcontrol() {
       create_Motor_UI();
     }
 
-    pros::delay(100);
+    pros::delay(50);
   }
 }
