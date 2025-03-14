@@ -5,6 +5,7 @@
 #include "liblvgl/core/lv_obj_pos.h"
 #include "liblvgl/core/lv_obj_style.h"
 #include "liblvgl/misc/lv_area.h"
+#include "liblvgl/misc/lv_color.h"
 #include "liblvgl/widgets/lv_label.h"
 #include "pros/misc.h"
 
@@ -36,6 +37,15 @@ void create_Motor_UI() {
   lv_obj_set_style_radius(SpdDOWNButton, 5, 0);
   lv_obj_add_event_cb(SpdUPButton, MotorSpeedUp, LV_EVENT_PRESSING, NULL);
   lv_obj_add_event_cb(SpdDOWNButton, MotorSpeedDown, LV_EVENT_PRESSING, NULL);
+  lv_obj_set_style_bg_color(SpdUPButton, lv_palette_main(LV_PALETTE_BLUE),
+                            LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_color(
+      SpdDOWNButton, lv_palette_main(LV_PALETTE_LIGHT_BLUE), LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_color(SpdUPButton, lv_palette_main(LV_PALETTE_BLUE),
+                            LV_STATE_PRESSED);
+  lv_obj_set_style_bg_color(SpdDOWNButton, lv_palette_main(LV_PALETTE_BLUE),
+                            LV_STATE_PRESSED);
+
   label = lv_label_create(SpdUPButton);
   lv_label_set_text(label, "UP");
   lv_obj_center(label);
@@ -109,11 +119,15 @@ void opcontrol() {
     lv_task_handler();
 
     if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_RIGHT)) {
+      speed = 0;
+      motors[selectedPort].brake();
       selectedPort = (selectedPort < 20) ? selectedPort + 1 : 1;
       create_Motor_UI();
     }
 
     if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_LEFT)) {
+      speed = 0;
+      motors[selectedPort].brake();
       selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
       create_Motor_UI();
     }
