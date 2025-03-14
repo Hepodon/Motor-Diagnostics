@@ -22,6 +22,7 @@ lv_obj_t *title, *motorLabel, *motorRPM, *motorTemp, *motorPower, *motorEff;
 int speed = 0;
 static void MotorSpeedUp(lv_event_t *e) { speed++; }
 static void MotorSpeedDown(lv_event_t *e) { speed--; }
+static void MotorSpeedReset(lv_event_t *e) { speed = 0; }
 
 // Function to create the UI for the selected motor
 void create_Motor_UI() {
@@ -29,21 +30,30 @@ void create_Motor_UI() {
   lv_obj_t *label;
   lv_obj_t *SpdUPButton = lv_obj_create(lv_scr_act()),
            *SpdDOWNButton = lv_obj_create(lv_scr_act());
-  lv_obj_align(SpdUPButton, LV_ALIGN_TOP_LEFT, 320, 80);
+  lv_obj_t *SpdRESETButton = lv_obj_create(lv_scr_act());
+  lv_obj_align(SpdUPButton, LV_ALIGN_TOP_LEFT, 320, 40);
+  lv_obj_align(SpdRESETButton, LV_ALIGN_TOP_LEFT, 320, 120);
   lv_obj_align(SpdDOWNButton, LV_ALIGN_TOP_LEFT, 320, 160);
   lv_obj_set_size(SpdUPButton, 95, 75);
+  lv_obj_set_size(SpdRESETButton, 95, 35);
   lv_obj_set_size(SpdDOWNButton, 95, 75);
-  lv_obj_set_style_radius(SpdUPButton, 5, 0);
-  lv_obj_set_style_radius(SpdDOWNButton, 5, 0);
+  lv_obj_set_style_radius(SpdUPButton, 15, 0);
+  lv_obj_set_style_radius(SpdRESETButton, 15, 0);
+  lv_obj_set_style_radius(SpdDOWNButton, 15, 0);
+  lv_obj_add_event_cb(SpdRESETButton, MotorSpeedReset, LV_EVENT_PRESSING, NULL);
   lv_obj_add_event_cb(SpdUPButton, MotorSpeedUp, LV_EVENT_PRESSING, NULL);
   lv_obj_add_event_cb(SpdDOWNButton, MotorSpeedDown, LV_EVENT_PRESSING, NULL);
-  lv_obj_set_style_bg_color(SpdUPButton, lv_palette_main(LV_PALETTE_BLUE),
+  lv_obj_set_style_bg_color(SpdUPButton, lv_palette_main(LV_PALETTE_LIGHT_BLUE),
                             LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_color(
-      SpdDOWNButton, lv_palette_main(LV_PALETTE_LIGHT_BLUE), LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_color(SpdUPButton, lv_palette_main(LV_PALETTE_BLUE),
-                            LV_STATE_PRESSED);
   lv_obj_set_style_bg_color(SpdDOWNButton, lv_palette_main(LV_PALETTE_BLUE),
+                            LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_color(SpdUPButton, lv_palette_darken(LV_PALETTE_BLUE, 3),
+                            LV_STATE_PRESSED);
+  lv_obj_set_style_bg_color(
+      SpdDOWNButton, lv_palette_darken(LV_PALETTE_BLUE, 3), LV_STATE_PRESSED);
+  lv_obj_set_style_bg_color(SpdRESETButton, lv_palette_main(LV_PALETTE_RED),
+                            LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_color(SpdRESETButton, lv_palette_main(LV_PALETTE_YELLOW),
                             LV_STATE_PRESSED);
 
   label = lv_label_create(SpdUPButton);
@@ -51,6 +61,9 @@ void create_Motor_UI() {
   lv_obj_center(label);
   label = lv_label_create(SpdDOWNButton);
   lv_label_set_text(label, "DOWN");
+  lv_obj_center(label);
+  label = lv_label_create(SpdRESETButton);
+  lv_label_set_text(label, "STOP");
   lv_obj_center(label);
 
   title = lv_label_create(lv_scr_act());
