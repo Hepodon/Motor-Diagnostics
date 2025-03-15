@@ -173,14 +173,14 @@ void opcontrol() {
 
     if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_RIGHT)) {
       speed = 0;
-      motors[selectedPort].brake();
+      motors[selectedPort - 1].brake();
       selectedPort = (selectedPort < 20) ? selectedPort + 1 : 1;
       create_Motor_UI();
     }
 
     if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_LEFT)) {
       speed = 0;
-      motors[selectedPort].brake();
+      motors[selectedPort - 1].brake();
       selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
       create_Motor_UI();
     }
