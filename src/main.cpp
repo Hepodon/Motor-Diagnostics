@@ -186,6 +186,6 @@ void opcontrol() {
     }
     motors[selectedPort].move(speed);
 
-    pros::delay(50);
+    delay(50);
   }
 }
