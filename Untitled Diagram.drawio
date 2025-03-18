@@ -1,9 +1,45 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 OPR/117.0.0.0" version="26.1.1">
   <diagram name="Page-1" id="v_8IgjA5dWIBYcizEska">
-    <mxGraphModel>
+    <mxGraphModel dx="557" dy="320" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="960" pageHeight="544" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-2" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="147" width="480" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-5" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.arc;startAngle=0.5;endAngle=0;rotation=90;" vertex="1" parent="1">
+          <mxGeometry x="290" y="240" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-6" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.arc;startAngle=0.5;endAngle=0;rotation=90;" vertex="1" parent="1">
+          <mxGeometry x="290" y="190" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-7" value="RPM" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="285" y="240" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-8" value="Temp" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="285" y="192" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-9" value="Power" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="285" y="272" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-10" value="Efficiency" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="285" y="310" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-11" value="Motor Port X" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="460" y="162" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-12" value="UP" style="rounded=1;whiteSpace=wrap;html=1;arcSize=19;" vertex="1" parent="1">
+          <mxGeometry x="570" y="200" width="90" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-13" value="DOWN" style="rounded=1;whiteSpace=wrap;html=1;arcSize=22;" vertex="1" parent="1">
+          <mxGeometry x="570" y="302" width="90" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-14" value="RESET" style="rounded=1;whiteSpace=wrap;html=1;arcSize=36;" vertex="1" parent="1">
+          <mxGeometry x="570" y="270" width="90" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="5OrQcwAHcLX06q_Zt-Xs-15" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="120" width="480" height="27" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
