@@ -51,18 +51,20 @@ void create_Motor_UI() {
     motorRPMArc = lv_arc_create(lv_scr_act());
     lv_arc_set_range(motorRPMArc, 0, 200);
     lv_obj_set_size(motorRPMArc, 120, 120);
-    lv_obj_align(motorRPMArc, LV_ALIGN_LEFT_MID, 40, 0);
-    lv_arc_set_rotation(motorRPMArc, 270);
-    lv_arc_set_bg_angles(motorRPMArc, 180, 360);
+    lv_obj_align(motorRPMArc, LV_ALIGN_TOP_LEFT, 40, 50);
+    lv_obj_align_to(motorRPMArc, motorRPM, LV_ALIGN_OUT_TOP_MID, 0, -20);
+    lv_arc_set_rotation(motorRPMArc, 0);
+    lv_arc_set_bg_angles(motorRPMArc, 0, 180);
     lv_arc_set_mode(motorRPMArc, LV_ARC_MODE_NORMAL);
     lv_obj_clear_flag(motorRPMArc, LV_OBJ_FLAG_CLICKABLE);
 
     motorTempArc = lv_arc_create(lv_scr_act());
     lv_arc_set_range(motorTempArc, 0, 100);
     lv_obj_set_size(motorTempArc, 120, 120);
-    lv_obj_align(motorTempArc, LV_ALIGN_RIGHT_MID, -40, 0);
-    lv_arc_set_rotation(motorTempArc, 270);
-    lv_arc_set_bg_angles(motorTempArc, 180, 360);
+    lv_obj_align(motorTempArc, LV_ALIGN_TOP_RIGHT, -40, 50);
+    lv_obj_align_to(motorTempArc, motorTemp, LV_ALIGN_OUT_TOP_MID, 0, -20);
+    lv_arc_set_rotation(motorTempArc, 0);
+    lv_arc_set_bg_angles(motorTempArc, 0, 180);
     lv_arc_set_mode(motorTempArc, LV_ARC_MODE_NORMAL);
     lv_obj_clear_flag(motorTempArc, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_t *label;
@@ -180,7 +182,7 @@ void opcontrol() {
       } else {
         selectedPort = 1;
       }
-      //selectedPort = (selectedPort < 20) ? selectedPort + 1 : 1;
+      // selectedPort = (selectedPort < 20) ? selectedPort + 1 : 1;
       create_Motor_UI();
     }
 
@@ -192,7 +194,7 @@ void opcontrol() {
       } else {
         selectedPort = 20;
       }
-      //selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
+      // selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
       create_Motor_UI();
     }
     motors[selectedPort].move(speed);
