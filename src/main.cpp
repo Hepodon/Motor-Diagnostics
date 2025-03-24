@@ -7,9 +7,10 @@
 #include "liblvgl/misc/lv_area.h"
 #include "liblvgl/misc/lv_color.h"
 #include "liblvgl/widgets/lv_label.h"
-#include "pros/device.h"
 #include "pros/device.hpp"
 #include "pros/misc.h"
+#include "pros/motors.h"
+#include "pros/motors.hpp"
 
 using namespace pros;
 using namespace std;
@@ -48,21 +49,35 @@ void create_Motor_UI() {
         motorLabel,
         ("Port " + to_string(selectedPort) + ": No motor connected").c_str());
   } else {
+    if(pros::Device::get_plugged_type(selectedPort) == pros::DeviceType::motor) {
+      switch (motors[selectedPort].get_gearing()) {
+        case MotorGears::ratio_36_to_1:
+          cout << "36:1" << endl;
+          break;
+        case MotorGears::ratio_18_to_1:
+          cout << "18:1" << endl;
+          break;
+        case MotorGears::ratio_6_to_1:
+          cout << "6:1" << endl;
+          break;
+        case MotorGears::invalid:
+          cout << "invalid" << endl;
+          break;
+        }
+    }
     motorRPMArc = lv_arc_create(lv_scr_act());
     lv_arc_set_range(motorRPMArc, 0, 200);
-    lv_obj_set_size(motorRPMArc, 120, 120);
-    lv_obj_align(motorRPMArc, LV_ALIGN_TOP_LEFT, 40, 50);
-    lv_obj_align_to(motorRPMArc, motorRPM, LV_ALIGN_OUT_TOP_MID, 0, -20);
-    lv_arc_set_rotation(motorRPMArc, 0);
+    lv_obj_set_size(motorRPMArc, 75, 70);
+    lv_obj_align(motorRPMArc, LV_ALIGN_TOP_LEFT, 10, 25);
+    lv_arc_set_rotation(motorRPMArc, 180);
     lv_arc_set_bg_angles(motorRPMArc, 0, 180);
     lv_arc_set_mode(motorRPMArc, LV_ARC_MODE_NORMAL);
     lv_obj_clear_flag(motorRPMArc, LV_OBJ_FLAG_CLICKABLE);
 
     motorTempArc = lv_arc_create(lv_scr_act());
     lv_arc_set_range(motorTempArc, 0, 100);
-    lv_obj_set_size(motorTempArc, 120, 120);
+    lv_obj_set_size(motorTempArc, 75, 70);
     lv_obj_align(motorTempArc, LV_ALIGN_TOP_RIGHT, -40, 50);
-    lv_obj_align_to(motorTempArc, motorTemp, LV_ALIGN_OUT_TOP_MID, 0, -20);
     lv_arc_set_rotation(motorTempArc, 0);
     lv_arc_set_bg_angles(motorTempArc, 0, 180);
     lv_arc_set_mode(motorTempArc, LV_ARC_MODE_NORMAL);
@@ -145,10 +160,10 @@ void update_Motor_Data() {
     char buffer[50];
     int rpm = motors[selectedPort - 1].get_actual_velocity();
     int temp = motors[selectedPort - 1].get_temperature();
-    lv_arc_set_value(motorRPMArc, rpm);
+    lv_arc_set_value(motorRPMArc, fabs(rpm));
     lv_arc_set_value(motorTempArc, temp);
 
-    update_arc_color(motorRPMArc, rpm, 200);
+    update_arc_color(motorRPMArc, fabs(rpm), 200);
     update_arc_color(motorTempArc, temp, 100);
     sprintf(buffer, "RPM: %.1d", rpm);
     lv_label_set_text(motorRPM, buffer);
