@@ -49,21 +49,22 @@ void create_Motor_UI() {
         motorLabel,
         ("Port " + to_string(selectedPort) + ": No motor connected").c_str());
   } else {
-    if(pros::Device::get_plugged_type(selectedPort) == pros::DeviceType::motor) {
+    if (pros::Device::get_plugged_type(selectedPort) ==
+        pros::DeviceType::motor) {
       switch (motors[selectedPort].get_gearing()) {
-        case MotorGears::ratio_36_to_1:
-          cout << "36:1" << endl;
-          break;
-        case MotorGears::ratio_18_to_1:
-          cout << "18:1" << endl;
-          break;
-        case MotorGears::ratio_6_to_1:
-          cout << "6:1" << endl;
-          break;
-        case MotorGears::invalid:
-          cout << "invalid" << endl;
-          break;
-        }
+      case MotorGears::ratio_36_to_1:
+        cout << "36:1" << endl;
+        break;
+      case MotorGears::ratio_18_to_1:
+        cout << "18:1" << endl;
+        break;
+      case MotorGears::ratio_6_to_1:
+        cout << "6:1" << endl;
+        break;
+      case MotorGears::invalid:
+        cout << "invalid" << endl;
+        break;
+      }
     }
     motorRPMArc = lv_arc_create(lv_scr_act());
     lv_arc_set_range(motorRPMArc, 0, 200);
@@ -84,8 +85,8 @@ void create_Motor_UI() {
     lv_obj_clear_flag(motorTempArc, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_t *label;
     lv_obj_t *SpdUPButton = lv_obj_create(lv_scr_act()),
-             *SpdDOWNButton = lv_obj_create(lv_scr_act());
-    lv_obj_t *SpdRESETButton = lv_obj_create(lv_scr_act());
+             *SpdDOWNButton = lv_obj_create(lv_scr_act()),
+             *SpdRESETButton = lv_obj_create(lv_scr_act());
 
     lv_obj_align(SpdUPButton, LV_ALIGN_TOP_LEFT, 320, 40);
     lv_obj_align(SpdRESETButton, LV_ALIGN_TOP_LEFT, 320, 120);
@@ -192,24 +193,14 @@ void opcontrol() {
     if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_RIGHT)) {
       speed = 0;
       motors[selectedPort - 1].brake();
-      if (selectedPort < 20) {
-        selectedPort++;
-      } else {
-        selectedPort = 1;
-      }
-      // selectedPort = (selectedPort < 20) ? selectedPort + 1 : 1;
+      selectedPort = (selectedPort < 20) ? selectedPort + 1 : 1;
       create_Motor_UI();
     }
 
     if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_LEFT)) {
       speed = 0;
       motors[selectedPort - 1].brake();
-      if (selectedPort > 1) {
-        selectedPort--;
-      } else {
-        selectedPort = 20;
-      }
-      // selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
+      selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
       create_Motor_UI();
     }
     motors[selectedPort].move(speed);
