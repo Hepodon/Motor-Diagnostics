@@ -50,7 +50,7 @@ void create_Motor_UI() {
   } else {
     if (pros::Device::get_plugged_type(selectedPort) ==
         pros::DeviceType::motor) {
-      switch (motors[selectedPort].get_gearing()) {
+      switch (motors[selectedPort - 1].get_gearing()) {
       case MotorGears::ratio_36_to_1:
         cout << "36:1" << endl;
         break;
@@ -201,7 +201,7 @@ void opcontrol() {
       selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
       create_Motor_UI();
     }
-    motors[selectedPort].move(speed);
+    motors[selectedPort - 1].move(speed);
 
     delay(50);
   }
