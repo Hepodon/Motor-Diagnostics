@@ -21,7 +21,7 @@ Motor motors[20] = {Motor(1),  Motor(2),  Motor(3),  Motor(4),  Motor(5),
                     Motor(16), Motor(17), Motor(18), Motor(19), Motor(20)};
 
 int selectedPort = 1;
-lv_obj_t *title, *motorLabel, *motorRPM, *motorTemp, *motorPower, *motorEff;
+lv_obj_t *title, *motorLabel, *motorRPM, *motorTemp, *motorPower, *motorTor;
 int speed = 0;
 static void MotorSpeedUp(lv_event_t *e) { speed++; }
 static void MotorSpeedDown(lv_event_t *e) { speed--; }
@@ -148,9 +148,9 @@ void create_Motor_UI() {
     lv_label_set_text(motorPower, "Power: ");
     lv_obj_align(motorPower, LV_ALIGN_TOP_LEFT, 10, 160);
 
-    motorEff = lv_label_create(lv_scr_act());
-    lv_label_set_text(motorEff, "Efficiency: ");
-    lv_obj_align(motorEff, LV_ALIGN_TOP_LEFT, 10, 200);
+    motorTor = lv_label_create(lv_scr_act());
+    lv_label_set_text(motorTor, "Torque: ");
+    lv_obj_align(motorTor, LV_ALIGN_TOP_LEFT, 10, 200);
   }
 }
 
@@ -174,9 +174,8 @@ void update_Motor_Data() {
     sprintf(buffer, "Power: %.1fW", motors[selectedPort - 1].get_power());
     lv_label_set_text(motorPower, buffer);
 
-    sprintf(buffer, "Efficiency: %.1f%%",
-            motors[selectedPort - 1].get_efficiency());
-    lv_label_set_text(motorEff, buffer);
+    sprintf(buffer, "Torque: %.1f%%", motors[selectedPort - 1].get_torque());
+    lv_label_set_text(motorTor, buffer);
   }
 }
 
