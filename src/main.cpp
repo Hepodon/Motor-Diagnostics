@@ -20,7 +20,7 @@ Motor motors[20] = {Motor(1),  Motor(2),  Motor(3),  Motor(4),  Motor(5),
                     Motor(11), Motor(12), Motor(13), Motor(14), Motor(15),
                     Motor(16), Motor(17), Motor(18), Motor(19), Motor(20)};
 
-int selectedPort = 1;
+int selectedPort = 0;
 lv_obj_t *title, *motorLabel, *motorRPM, *motorTemp, *motorPower, *motorTor;
 int speed = 0;
 lv_obj_t *label;
@@ -68,7 +68,7 @@ void create_Motor_UI() {
   } else {
     if (pros::Device::get_plugged_type(selectedPort) ==
         pros::DeviceType::motor) {
-      switch (motors[selectedPort - 1].get_gearing()) {
+      switch (motors[selectedPort].get_gearing()) {
       case MotorGears::ratio_36_to_1:
         cout << "36:1" << endl;
         break;
@@ -203,8 +203,8 @@ void create_Motor_UI() {
 void update_Motor_Data() {
   if (Device::get_plugged_type(selectedPort) == DeviceType::motor) {
     char buffer[50];
-    int rpm = motors[selectedPort - 1].get_actual_velocity();
-    int temp = motors[selectedPort - 1].get_temperature();
+    int rpm = motors[selectedPort].get_actual_velocity();
+    int temp = motors[selectedPort].get_temperature();
     lv_arc_set_value(motorRPMArc, fabs(rpm));
     lv_arc_set_value(motorTempArc, temp);
 
@@ -216,10 +216,10 @@ void update_Motor_Data() {
     sprintf(buffer, "Temp: %.1dC", temp);
     lv_label_set_text(motorTemp, buffer);
 
-    sprintf(buffer, "Power: %.1fW", motors[selectedPort - 1].get_power());
+    sprintf(buffer, "Power: %.1fW", motors[selectedPort].get_power());
     lv_label_set_text(motorPower, buffer);
 
-    sprintf(buffer, "Torque: %.1f%%", motors[selectedPort - 1].get_torque());
+    sprintf(buffer, "Torque: %.1f%%", motors[selectedPort].get_torque());
     lv_label_set_text(motorTor, buffer);
   }
 }
@@ -235,18 +235,18 @@ void opcontrol() {
 
     if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_RIGHT)) {
       speed = 0;
-      motors[selectedPort - 1].brake();
-      selectedPort = (selectedPort < 20) ? selectedPort + 1 : 1;
+      motors[selectedPort].brake();
+      selectedPort = (selectedPort < 19) ? selectedPort + 1 : 0;
       create_Motor_UI();
     }
 
     if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_LEFT)) {
       speed = 0;
-      motors[selectedPort - 1].brake();
-      selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
+      motors[selectedPort].brake();
+      selectedPort = (selectedPort > 0) ? selectedPort - 1 : 19;
       create_Motor_UI();
     }
-    motors[selectedPort - 1].move(speed);
+    motors[selectedPort].move(speed);
 
     delay(50);
   }
