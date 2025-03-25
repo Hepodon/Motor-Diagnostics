@@ -9,7 +9,6 @@
 #include "liblvgl/widgets/lv_label.h"
 #include "pros/device.hpp"
 #include "pros/misc.h"
-#include "pros/motors.h"
 #include "pros/motors.hpp"
 
 using namespace pros;
@@ -157,7 +156,7 @@ void create_Motor_UI() {
 
 // Function to update the motor data
 void update_Motor_Data() {
-  if (pros::Device::get_plugged_type(selectedPort) == DeviceType::motor) {
+  if (Device::get_plugged_type(selectedPort) == DeviceType::motor) {
     char buffer[50];
     int rpm = motors[selectedPort - 1].get_actual_velocity();
     int temp = motors[selectedPort - 1].get_temperature();
