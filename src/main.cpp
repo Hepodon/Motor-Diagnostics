@@ -77,8 +77,8 @@ void create_Motor_UI() {
     motorTempArc = lv_arc_create(lv_scr_act());
     lv_arc_set_range(motorTempArc, 0, 100);
     lv_obj_set_size(motorTempArc, 75, 70);
-    lv_obj_align(motorTempArc, LV_ALIGN_TOP_RIGHT, -40, 50);
-    lv_arc_set_rotation(motorTempArc, 0);
+    lv_obj_align(motorTempArc, LV_ALIGN_TOP_RIGHT, 10, 75);
+    lv_arc_set_rotation(motorTempArc, 180);
     lv_arc_set_bg_angles(motorTempArc, 0, 180);
     lv_arc_set_mode(motorTempArc, LV_ARC_MODE_NORMAL);
     lv_obj_clear_flag(motorTempArc, LV_OBJ_FLAG_CLICKABLE);
