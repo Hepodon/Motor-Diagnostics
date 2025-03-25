@@ -226,6 +226,7 @@ void update_Motor_Data() {
 
 void initialize() {
   lv_init();
+  create_Motor_UI();
 }
 
 void opcontrol() {
