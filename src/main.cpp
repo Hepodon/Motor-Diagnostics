@@ -23,10 +23,28 @@ Motor motors[20] = {Motor(1),  Motor(2),  Motor(3),  Motor(4),  Motor(5),
 int selectedPort = 1;
 lv_obj_t *title, *motorLabel, *motorRPM, *motorTemp, *motorPower, *motorTor;
 int speed = 0;
+lv_obj_t *label;
+lv_obj_t *SpdUPButton = lv_obj_create(lv_scr_act()),
+         *SpdDOWNButton = lv_obj_create(lv_scr_act()),
+         *SpdRESETButton = lv_obj_create(lv_scr_act()),
+         *LeftPortButton = lv_obj_create(lv_scr_act()),
+         *RightPortButton = lv_obj_create(lv_scr_act());
 static void MotorSpeedUp(lv_event_t *e) { speed++; }
 static void MotorSpeedDown(lv_event_t *e) { speed--; }
 static void MotorSpeedReset(lv_event_t *e) { speed = 0; }
 
+static void PortSelectLeft(lv_event_t *e) {
+  selectedPort--;
+  while (lv_obj_has_state(LeftPortButton, LV_STATE_PRESSED)) {
+    delay(20);
+  }
+}
+static void PortSelectRight(lv_event_t *e) {
+  selectedPort++;
+  while (lv_obj_has_state(RightPortButton, LV_STATE_PRESSED)) {
+    delay(20);
+  }
+}
 lv_obj_t *motorRPMArc, *motorTempArc;
 
 void update_arc_color(lv_obj_t *arc, int value, int maxValue) {
@@ -82,40 +100,67 @@ void create_Motor_UI() {
     lv_arc_set_bg_angles(motorTempArc, 0, 180);
     lv_arc_set_mode(motorTempArc, LV_ARC_MODE_NORMAL);
     lv_obj_clear_flag(motorTempArc, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_t *label;
-    lv_obj_t *SpdUPButton = lv_obj_create(lv_scr_act()),
-             *SpdDOWNButton = lv_obj_create(lv_scr_act()),
-             *SpdRESETButton = lv_obj_create(lv_scr_act());
 
     lv_obj_align(SpdUPButton, LV_ALIGN_TOP_LEFT, 320, 40);
     lv_obj_align(SpdRESETButton, LV_ALIGN_TOP_LEFT, 320, 120);
     lv_obj_align(SpdDOWNButton, LV_ALIGN_TOP_LEFT, 320, 160);
 
+    lv_obj_align(LeftPortButton, LV_ALIGN_TOP_LEFT, 200, 200);
+    lv_obj_align(RightPortButton, LV_ALIGN_TOP_LEFT, 260, 200);
+
     lv_obj_set_size(SpdUPButton, 95, 75);
     lv_obj_set_size(SpdRESETButton, 95, 35);
     lv_obj_set_size(SpdDOWNButton, 95, 75);
 
+    lv_obj_set_size(LeftPortButton, 40, 50);
+    lv_obj_set_size(RightPortButton, 40, 50);
+
     lv_obj_set_style_radius(SpdUPButton, 15, 0);
     lv_obj_set_style_radius(SpdRESETButton, 15, 0);
     lv_obj_set_style_radius(SpdDOWNButton, 15, 0);
+
+    lv_obj_set_style_radius(LeftPortButton, 20, 0);
+    lv_obj_set_style_radius(RightPortButton, 20, 0);
 
     lv_obj_add_event_cb(SpdRESETButton, MotorSpeedReset, LV_EVENT_PRESSING,
                         NULL);
     lv_obj_add_event_cb(SpdUPButton, MotorSpeedUp, LV_EVENT_PRESSING, NULL);
     lv_obj_add_event_cb(SpdDOWNButton, MotorSpeedDown, LV_EVENT_PRESSING, NULL);
 
+    lv_obj_add_event_cb(LeftPortButton, PortSelectLeft, LV_EVENT_PRESSING,
+                        NULL);
+    lv_obj_add_event_cb(RightPortButton, PortSelectRight, LV_EVENT_PRESSING,
+                        NULL);
+
     lv_obj_set_style_bg_color(
         SpdUPButton, lv_palette_main(LV_PALETTE_LIGHT_BLUE), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(SpdDOWNButton, lv_palette_main(LV_PALETTE_BLUE),
                               LV_STATE_DEFAULT);
+
     lv_obj_set_style_bg_color(
         SpdUPButton, lv_palette_darken(LV_PALETTE_BLUE, 3), LV_STATE_PRESSED);
     lv_obj_set_style_bg_color(
         SpdDOWNButton, lv_palette_darken(LV_PALETTE_BLUE, 3), LV_STATE_PRESSED);
+
     lv_obj_set_style_bg_color(SpdRESETButton, lv_palette_main(LV_PALETTE_RED),
                               LV_STATE_DEFAULT);
+
     lv_obj_set_style_bg_color(
         SpdRESETButton, lv_palette_main(LV_PALETTE_YELLOW), LV_STATE_PRESSED);
+
+    lv_obj_set_style_bg_color(LeftPortButton,
+                              lv_palette_main(LV_PALETTE_LIGHT_GREEN),
+                              LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(RightPortButton,
+                              lv_palette_main(LV_PALETTE_LIGHT_GREEN),
+                              LV_STATE_DEFAULT);
+
+    lv_obj_set_style_bg_color(LeftPortButton,
+                              lv_palette_darken(LV_PALETTE_LIGHT_GREEN, 5),
+                              LV_STATE_PRESSED);
+    lv_obj_set_style_bg_color(RightPortButton,
+                              lv_palette_darken(LV_PALETTE_LIGHT_GREEN, 5),
+                              LV_STATE_PRESSED);
 
     label = lv_label_create(SpdUPButton);
     lv_label_set_text(label, "UP");
