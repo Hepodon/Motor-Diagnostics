@@ -41,6 +41,8 @@
  */
 //#include "okapi/api.hpp"
 
+static void PortSelectLeft(lv_event_t *e);
+static void PortSelectRight(lv_event_t *e);
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
  * Motor, you can use the namespace with the following commented out line.
