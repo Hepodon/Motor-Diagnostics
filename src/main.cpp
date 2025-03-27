@@ -34,6 +34,17 @@ void update_arc_color(lv_obj_t *arc, int value, int maxValue) {
                                                 : LV_PALETTE_GREEN);
   lv_obj_set_style_arc_color(arc, color, LV_PART_INDICATOR);
 }
+string device_Type = "NULL";
+
+// Function to create Port Selection and detect motor ports
+void detect_Port_Type(int portNum) {
+  if (Device::get_plugged_type(portNum) == DeviceType::motor) {
+    device_Type = "Motor";
+  } else if (Device::get_plugged_type(portNum) == DeviceType::imu) {
+    device_Type = "Imu";
+  }
+}
+
 // Function to create the UI for the selected motor
 void create_Motor_UI() {
   lv_obj_clean(lv_scr_act()); // Clear the screen before updating
@@ -41,12 +52,12 @@ void create_Motor_UI() {
   lv_obj_t *LeftPortButton = lv_obj_create(lv_scr_act()),
            *RightPortButton = lv_obj_create(lv_scr_act());
   lv_obj_t *label;
-  lv_obj_align(LeftPortButton, LV_ALIGN_TOP_LEFT, 200, 200);
-  lv_obj_align(RightPortButton, LV_ALIGN_TOP_LEFT, 260, 200);
-  lv_obj_set_size(LeftPortButton, 40, 50);
-  lv_obj_set_size(RightPortButton, 40, 50);
-  lv_obj_set_style_radius(LeftPortButton, 20, 0);
-  lv_obj_set_style_radius(RightPortButton, 20, 0);
+  lv_obj_align(LeftPortButton, LV_ALIGN_TOP_LEFT, 200, 180);
+  lv_obj_align(RightPortButton, LV_ALIGN_TOP_LEFT, 260, 180);
+  lv_obj_set_size(LeftPortButton, 40, 55);
+  lv_obj_set_size(RightPortButton, 40, 55);
+  lv_obj_set_style_radius(LeftPortButton, 10, 0);
+  lv_obj_set_style_radius(RightPortButton, 10, 0);
   lv_obj_add_event_cb(LeftPortButton, PortSelectLeft, LV_EVENT_CLICKED, NULL);
   lv_obj_add_event_cb(RightPortButton, PortSelectRight, LV_EVENT_CLICKED, NULL);
   lv_obj_set_style_bg_color(LeftPortButton,
@@ -62,7 +73,10 @@ void create_Motor_UI() {
   lv_obj_set_style_bg_color(RightPortButton,
                             lv_palette_darken(LV_PALETTE_LIGHT_GREEN, 5),
                             LV_STATE_PRESSED);
-  if (Device::get_plugged_type(selectedPort) == DeviceType::motor) {
+
+  detect_Port_Type(selectedPort);
+
+  if (device_Type == "Motor") {
     lv_obj_t *SpdUPButton = lv_obj_create(lv_scr_act()),
              *SpdDOWNButton = lv_obj_create(lv_scr_act()),
              *SpdRESETButton = lv_obj_create(lv_scr_act());
@@ -151,10 +165,7 @@ void create_Motor_UI() {
     motorTor = lv_label_create(lv_scr_act());
     lv_label_set_text(motorTor, "Torque: ");
     lv_obj_align(motorTor, LV_ALIGN_TOP_LEFT, 10, 200);
-  
-  }
-  else {
-
+  } else {
   }
 }
 
@@ -196,6 +207,7 @@ static void PortSelectRight(lv_event_t *e) {
 }
 
 void initialize() {
+  // create_Startup_UI();
   lv_init();
   create_Motor_UI();
 }
@@ -204,20 +216,20 @@ void opcontrol() {
   while (true) {
     update_Motor_Data();
 
-    if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_RIGHT)) {
-      speed = 0;
-      Motor(selectedPort).brake();
+    // if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_RIGHT)) {
+    //   speed = 0;
+    //   Motor(selectedPort).brake();
 
-      selectedPort = (selectedPort < 20) ? selectedPort + 1 : 1;
-      create_Motor_UI();
-    }
+    //   selectedPort = (selectedPort < 20) ? selectedPort + 1 : 1;
+    //   create_Motor_UI();
+    // }
 
-    if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_LEFT)) {
-      speed = 0;
-      Motor(selectedPort).brake();
-      selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
-      create_Motor_UI();
-    }
+    // if (conInput.get_digital_new_press(E_CONTROLLER_DIGITAL_LEFT)) {
+    //   speed = 0;
+    //   Motor(selectedPort).brake();
+    //   selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
+    //   create_Motor_UI();
+    // }
     Motor(selectedPort).move(speed);
 
     delay(50);
