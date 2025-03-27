@@ -90,7 +90,7 @@ void create_Motor_UI() {
     lv_obj_clear_flag(motorRPMArc, LV_OBJ_FLAG_CLICKABLE);
 
     motorTempArc = lv_arc_create(lv_scr_act());
-    lv_arc_set_range(motorTempArc, 0, 100);
+    lv_arc_set_range(motorTempArc, 0, 50);
     lv_obj_set_size(motorTempArc, 75, 70);
     lv_obj_align(motorTempArc, LV_ALIGN_TOP_RIGHT, 10, 75);
     lv_arc_set_rotation(motorTempArc, 180);
@@ -171,19 +171,19 @@ void create_Motor_UI() {
 
 // Function to update the motor data
 void update_Motor_Data() {
-  if (Device::get_plugged_type(selectedPort) == DeviceType::motor) {
+  if (device_Type == "Motor") {
     char buffer[50];
     int rpm = Motor(selectedPort).get_actual_velocity();
-    int temp = Motor(selectedPort).get_temperature();
+    int temp = (Motor(selectedPort).get_temperature() + 273);
     lv_arc_set_value(motorRPMArc, fabs(rpm));
-    lv_arc_set_value(motorTempArc, temp);
+    lv_arc_set_value(motorTempArc, temp-290);
 
     update_arc_color(motorRPMArc, fabs(rpm), 200);
-    update_arc_color(motorTempArc, temp, 100);
+    update_arc_color(motorTempArc, (temp - 290), 50);
     sprintf(buffer, "RPM: %.1d", rpm);
     lv_label_set_text(motorRPM, buffer);
 
-    sprintf(buffer, "Temp: %.1dC", temp);
+    sprintf(buffer, "Temp: %.1dK", temp);
     lv_label_set_text(motorTemp, buffer);
 
     sprintf(buffer, "Power: %.1fW", Motor(selectedPort).get_power());
