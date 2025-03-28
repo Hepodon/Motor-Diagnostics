@@ -92,7 +92,7 @@ void create_Motor_UI() {
     motorTempArc = lv_arc_create(lv_scr_act());
     lv_arc_set_range(motorTempArc, 0, 50);
     lv_obj_set_size(motorTempArc, 75, 70);
-    lv_obj_align(motorTempArc, LV_ALIGN_TOP_RIGHT, 10, 75);
+    lv_obj_align(motorTempArc, LV_ALIGN_TOP_LEFT, 10, 75);
     lv_arc_set_rotation(motorTempArc, 180);
     lv_arc_set_bg_angles(motorTempArc, 0, 180);
     lv_arc_set_mode(motorTempArc, LV_ARC_MODE_NORMAL);
@@ -103,7 +103,7 @@ void create_Motor_UI() {
     lv_obj_align(SpdDOWNButton, LV_ALIGN_TOP_LEFT, 320, 160);
 
     lv_obj_set_size(SpdUPButton, 95, 75);
-    lv_obj_set_size(SpdRESETButton, 95, 40);
+    lv_obj_set_size(SpdRESETButton, 95, 45);
     lv_obj_set_size(SpdDOWNButton, 95, 75);
 
     lv_obj_set_style_radius(SpdUPButton, 15, 0);
@@ -148,23 +148,23 @@ void create_Motor_UI() {
     motorLabel = lv_label_create(lv_scr_act());
     string motorText = "Port " + to_string(selectedPort);
     lv_label_set_text(motorLabel, motorText.c_str());
-    lv_obj_align(motorLabel, LV_ALIGN_TOP_MID, 0, 40);
+    lv_obj_align(motorLabel, LV_ALIGN_TOP_MID, 0, 25);
 
     motorRPM = lv_label_create(lv_scr_act());
     lv_label_set_text(motorRPM, "RPM: ");
-    lv_obj_align(motorRPM, LV_ALIGN_TOP_LEFT, 10, 80);
+    lv_obj_align(motorRPM, LV_ALIGN_TOP_LEFT, 25, 35);
 
     motorTemp = lv_label_create(lv_scr_act());
     lv_label_set_text(motorTemp, "Temp: ");
-    lv_obj_align(motorTemp, LV_ALIGN_TOP_LEFT, 10, 120);
+    lv_obj_align(motorTemp, LV_ALIGN_TOP_LEFT, 25, 95);
 
     motorPower = lv_label_create(lv_scr_act());
     lv_label_set_text(motorPower, "Power: ");
-    lv_obj_align(motorPower, LV_ALIGN_TOP_LEFT, 10, 160);
+    lv_obj_align(motorPower, LV_ALIGN_TOP_LEFT, 25, 155);
 
     motorTor = lv_label_create(lv_scr_act());
     lv_label_set_text(motorTor, "Torque: ");
-    lv_obj_align(motorTor, LV_ALIGN_TOP_LEFT, 10, 200);
+    lv_obj_align(motorTor, LV_ALIGN_TOP_LEFT, 25, 215);
   } else {
   }
 }
