@@ -234,10 +234,17 @@ void create_Motor_UI() {
     lv_obj_align(motorTor, LV_ALIGN_TOP_LEFT, 25, 215);
   } else {
   }
-} /*
+}
+
+bool Braking = false;
+
+static void VelocityBrakeMode(lv_event_t *e) { Braking = true; }
+static void VelocityUNBrakeMode(lv_event_t *e) { Braking = false; }
+
 // Testing void function for Velocity Bar
 void tesing_Velocity_Bar() {
-  lv_obj_t *VelocityBar;
+  lv_obj_t *VelocityBar, *StopButton;
+  StopButton = lv_obj_create(lv_scr_act());
   VelocityBar = lv_slider_create(lv_scr_act());
   lv_slider_set_range(VelocityBar, -100, 100);
   lv_slider_set_value(VelocityBar, 0, LV_ANIM_ON);
@@ -245,11 +252,33 @@ void tesing_Velocity_Bar() {
   lv_obj_align(VelocityBar, LV_ALIGN_TOP_LEFT, 150, 200);
   lv_obj_set_style_bg_color(VelocityBar, lv_palette_main(LV_PALETTE_BLUE),
                             LV_STATE_DEFAULT);
+  lv_obj_align(StopButton, LV_ALIGN_TOP_LEFT, 240, 180);
+
+  lv_obj_set_size(StopButton, 200, 50);
+
+  lv_obj_set_style_radius(StopButton, 20, 0);
+
+  lv_obj_add_event_cb(StopButton, VelocityBrakeMode, LV_EVENT_PRESSED, NULL);
+
+  lv_obj_add_event_cb(StopButton, VelocityUNBrakeMode, LV_EVENT_RELEASED, NULL);
+
+  lv_obj_set_style_bg_color(StopButton, lv_palette_main(LV_PALETTE_GREEN),
+                            LV_STATE_DEFAULT);
+
+  lv_obj_set_style_bg_color(StopButton, lv_palette_darken(LV_PALETTE_GREEN, 4),
+                            LV_STATE_PRESSED);
   while (true) {
-    Motor(selectedPort).move_velocity(lv_slider_get_value(VelocityBar));
+    if (!Braking) {
+      lv_obj_add_flag(VelocityBar, LV_OBJ_FLAG_CLICKABLE);
+      Motor(selectedPort).move_velocity(lv_slider_get_value(VelocityBar));
+    }
+    if (Braking) {
+      lv_obj_clear_flag(VelocityBar, LV_OBJ_FLAG_CLICKABLE);
+      Motor(selectedPort).brake();
+    }
   }
 }
-*/
+
 // Function to update the motor data
 void update_Motor_Data() {
   if (device_Type == "Motor") {
@@ -307,7 +336,7 @@ static void BlueMotorSelect(lv_event_t *e) {
    title = lv_label_create(lv_scr_act());
    lv_obj_align(title, LV_ALIGN_TOP_LEFT, 240, 50);
 
-   lv_obj_t *STARTButton;
+   lv_obj_t *STARTButton = lv_obj_create(lv_scr_act());
 
    lv_obj_align(STARTButton, LV_ALIGN_TOP_LEFT, 240, 180);
 
