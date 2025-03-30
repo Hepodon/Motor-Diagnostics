@@ -30,22 +30,20 @@ lv_obj_t *motorRPMArc, *motorTempArc;
 void update_arc_color(lv_obj_t *arc, int value, int maxValue) {
   lv_color_t color;
   if (arc == motorRPMArc) {
-    lv_color_t color =
-        lv_palette_main(value > maxValue * 0.90   ? LV_PALETTE_RED
-                        : value > maxValue * 0.75 ? LV_PALETTE_DEEP_ORANGE
-                        : value > maxValue * 0.5  ? LV_PALETTE_ORANGE
-                        : value > maxValue * 0.25 ? LV_PALETTE_YELLOW
-                                                  : LV_PALETTE_GREEN);
+    color = lv_palette_main(value > maxValue * 0.90   ? LV_PALETTE_RED
+                            : value > maxValue * 0.75 ? LV_PALETTE_DEEP_ORANGE
+                            : value > maxValue * 0.5  ? LV_PALETTE_ORANGE
+                            : value > maxValue * 0.25 ? LV_PALETTE_YELLOW
+                                                      : LV_PALETTE_GREEN);
   }
 
   else if (arc == motorTempArc) {
-    lv_color_t color =
-        lv_palette_main(value > maxValue * 0.85   ? LV_PALETTE_RED
-                        : value > maxValue * 0.75 ? LV_PALETTE_DEEP_ORANGE
-                        : value > maxValue * 0.65 ? LV_PALETTE_ORANGE
-                        : value > maxValue * 0.50 ? LV_PALETTE_YELLOW
-                        : value > maxValue * 0.35 ? LV_PALETTE_GREEN
-                                                  : LV_PALETTE_BLUE);
+    color = lv_palette_main(value > maxValue * 0.85   ? LV_PALETTE_RED
+                            : value > maxValue * 0.75 ? LV_PALETTE_DEEP_ORANGE
+                            : value > maxValue * 0.65 ? LV_PALETTE_ORANGE
+                            : value > maxValue * 0.50 ? LV_PALETTE_YELLOW
+                            : value > maxValue * 0.35 ? LV_PALETTE_GREEN
+                                                      : LV_PALETTE_BLUE);
   }
   lv_obj_set_style_arc_color(arc, color, LV_PART_INDICATOR);
 }
@@ -276,6 +274,7 @@ void tesing_Velocity_Bar() {
       lv_obj_clear_flag(VelocityBar, LV_OBJ_FLAG_CLICKABLE);
       Motor(selectedPort).brake();
     }
+    delay(30);
   }
 }
 
