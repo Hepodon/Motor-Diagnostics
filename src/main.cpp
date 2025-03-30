@@ -309,13 +309,15 @@ static void BlueMotorSelect(lv_event_t *e) {
                              LV_STATE_DEFAULT);
 
    lv_obj_set_style_bg_color(STARTButton, lv_palette_darken(LV_PALETTE_GREEN,
- 4), LV_STATE_PRESSED); while (!STARTED) { delay(20);
-   }
+ 4), LV_STATE_PRESSED);
  }*/
 
 void initialize() {
   lv_init();
   // create_Startup_UI();
+  // while (!STARTED) {
+  //   delay(20);
+  // }
   create_Motor_UI();
 }
 
