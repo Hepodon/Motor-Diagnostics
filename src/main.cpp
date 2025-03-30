@@ -4,11 +4,10 @@
 #include "liblvgl/core/lv_obj.h"
 #include "liblvgl/core/lv_obj_pos.h"
 #include "liblvgl/core/lv_obj_style.h"
-#include "liblvgl/font/lv_font.h"
-#include "liblvgl/lv_conf_internal.h"
 #include "liblvgl/misc/lv_area.h"
 #include "liblvgl/misc/lv_color.h"
 #include "liblvgl/widgets/lv_label.h"
+#include "liblvgl/widgets/lv_slider.h"
 #include "pros/device.hpp"
 #include "pros/misc.h"
 #include "pros/motors.hpp"
@@ -235,8 +234,22 @@ void create_Motor_UI() {
     lv_obj_align(motorTor, LV_ALIGN_TOP_LEFT, 25, 215);
   } else {
   }
+} /*
+// Testing void function for Velocity Bar
+void tesing_Velocity_Bar() {
+  lv_obj_t *VelocityBar;
+  VelocityBar = lv_slider_create(lv_scr_act());
+  lv_slider_set_range(VelocityBar, -100, 100);
+  lv_slider_set_value(VelocityBar, 0, LV_ANIM_ON);
+  lv_obj_set_size(VelocityBar, 185, 15);
+  lv_obj_align(VelocityBar, LV_ALIGN_TOP_LEFT, 150, 200);
+  lv_obj_set_style_bg_color(VelocityBar, lv_palette_main(LV_PALETTE_BLUE),
+                            LV_STATE_DEFAULT);
+  while (true) {
+    Motor(selectedPort).move_velocity(lv_slider_get_value(VelocityBar));
+  }
 }
-
+*/
 // Function to update the motor data
 void update_Motor_Data() {
   if (device_Type == "Motor") {
