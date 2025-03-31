@@ -17,6 +17,7 @@ using namespace std;
 
 Controller conInput(E_CONTROLLER_MASTER);
 
+float Motorgearset = 1;
 int speed = 0;
 int selectedPort = 1;
 lv_obj_t *title, *motorLabel, *motorRPM, *motorTemp, *motorPower, *motorTor;
@@ -97,7 +98,7 @@ void create_Motor_UI() {
              *SpdRESETButton = lv_obj_create(lv_scr_act());
 
     // MOTOR GEARBOX SLECTION BUTTONS
-    /*
+
     lv_obj_t *GreenMotorGearboxButton = lv_obj_create(lv_scr_act()),
              *RedMotorGearboxButton = lv_obj_create(lv_scr_act()),
              *BlueMotorGearboxButton = lv_obj_create(lv_scr_act());
@@ -143,7 +144,7 @@ void create_Motor_UI() {
     lv_obj_set_style_bg_color(BlueMotorGearboxButton,
                               lv_palette_darken(LV_PALETTE_BLUE, 3),
                               LV_STATE_PRESSED);
-*/
+
     motorRPMArc = lv_arc_create(lv_scr_act());
     lv_arc_set_range(motorRPMArc, 0, maxRPM);
     lv_obj_set_size(motorRPMArc, 75, 70);
@@ -282,7 +283,7 @@ void tesing_Velocity_Bar() {
 void update_Motor_Data() {
   if (device_Type == "Motor") {
     char buffer[50];
-    int rpm = Motor(selectedPort).get_actual_velocity();
+    int rpm = Motor(selectedPort).get_actual_velocity() * Motorgearset;
     // Get temp in Kelvin
     int temp = (Motor(selectedPort).get_temperature() + 273.15);
     lv_arc_set_value(motorRPMArc, fabs(rpm));
@@ -317,14 +318,18 @@ static void PortSelectRight(lv_event_t *e) {
 }
 static void GreenMotorSelect(lv_event_t *e) {
   maxRPM = 200;
+  Motorgearset = 1;
   create_Motor_UI();
 }
 static void RedMotorSelect(lv_event_t *e) {
   maxRPM = 100;
+  Motorgearset = 1 / 2;
   create_Motor_UI();
 }
 static void BlueMotorSelect(lv_event_t *e) {
   maxRPM = 600;
+
+  Motorgearset = 3;
   create_Motor_UI();
 } /*
  bool STARTED = false;
