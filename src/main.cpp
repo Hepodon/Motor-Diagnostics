@@ -137,7 +137,7 @@ void create_Motor_UI() {
     lv_obj_set_style_bg_color(GreenMotorGearboxButton,
                               lv_palette_darken(LV_PALETTE_GREEN, 3),
                               LV_STATE_PRESSED);
-
+ 
     lv_obj_set_style_bg_color(RedMotorGearboxButton,
                               lv_palette_darken(LV_PALETTE_RED, 3),
                               LV_STATE_PRESSED);
@@ -232,6 +232,7 @@ void create_Motor_UI() {
     lv_label_set_text(motorTor, "Torque: ");
     lv_obj_align(motorTor, LV_ALIGN_TOP_LEFT, 25, 215);
   } else {
+    cube();
   }
 }
 
@@ -242,11 +243,14 @@ static void VelocityUNBrakeMode(lv_event_t *e) { Braking = false; }
 
 // Testing void function for Velocity Bar
 void tesing_Velocity_Bar() {
+  lv_obj_clean(lv_scr_act()); // Clear the screen before updating
+  selectedPort = 8;
+
   lv_obj_t *VelocityBar, *StopButton;
   StopButton = lv_obj_create(lv_scr_act());
   VelocityBar = lv_slider_create(lv_scr_act());
-  lv_slider_set_range(VelocityBar, -100, 100);
-  lv_slider_set_value(VelocityBar, 0, LV_ANIM_ON);
+  lv_slider_set_range(VelocityBar, -127, 127);
+  lv_slider_set_value(VelocityBar, 0, LV_ANIM_OFF);
   lv_obj_set_size(VelocityBar, 185, 15);
   lv_obj_align(VelocityBar, LV_ALIGN_TOP_LEFT, 150, 200);
   lv_obj_set_style_bg_color(VelocityBar, lv_palette_main(LV_PALETTE_BLUE),
@@ -269,10 +273,13 @@ void tesing_Velocity_Bar() {
   while (true) {
     if (!Braking) {
       lv_obj_add_flag(VelocityBar, LV_OBJ_FLAG_CLICKABLE);
-      Motor(selectedPort).move_velocity(lv_slider_get_value(VelocityBar));
+      Motor(selectedPort).move(lv_slider_get_value(VelocityBar));
+      delay(20);
     }
     if (Braking) {
       lv_obj_clear_flag(VelocityBar, LV_OBJ_FLAG_CLICKABLE);
+      lv_slider_set_value(VelocityBar, 0, LV_ANIM_OFF);
+
       Motor(selectedPort).brake();
     }
     delay(30);
@@ -300,7 +307,7 @@ void update_Motor_Data() {
     sprintf(buffer, "Power: %.1fW", Motor(selectedPort).get_power());
     lv_label_set_text(motorPower, buffer);
 
-    sprintf(buffer, "Torque: %.1f%%", Motor(selectedPort).get_torque());
+    sprintf(buffer, "Torque: %.1fNM", Motor(selectedPort).get_torque());
     lv_label_set_text(motorTor, buffer);
   }
 }
@@ -323,7 +330,7 @@ static void GreenMotorSelect(lv_event_t *e) {
 }
 static void RedMotorSelect(lv_event_t *e) {
   maxRPM = 100;
-  Motorgearset = 1 / 2;
+  Motorgearset = 0.5;
   create_Motor_UI();
 }
 static void BlueMotorSelect(lv_event_t *e) {
@@ -331,39 +338,42 @@ static void BlueMotorSelect(lv_event_t *e) {
 
   Motorgearset = 3;
   create_Motor_UI();
-} /*
- bool STARTED = false;
- static void Start_Diagnostics_Mode(lv_event_t *e) { STARTED = true; }
- void create_Startup_UI() {
-   lv_label_set_text(title, "VEX VITALS");
-   lv_obj_set_style_text_font(title, &lv_font_montserrat_30, 0);
-   title = lv_label_create(lv_scr_act());
-   lv_obj_align(title, LV_ALIGN_TOP_LEFT, 240, 50);
+}
+bool STARTED = false;
+static void Start_Diagnostics_Mode(lv_event_t *e) { STARTED = true; }
+void create_Startup_UI() {
 
-   lv_obj_t *STARTButton = lv_obj_create(lv_scr_act());
+  lv_obj_t *label = lv_scr_act();
+  title = lv_label_create(lv_scr_act());
+  lv_label_set_text(title, "VEX VITALS");
+  lv_obj_set_style_text_font(title, &lv_font_montserrat_30, 0);
+  lv_obj_align(title, LV_ALIGN_TOP_LEFT, 150, 50);
 
-   lv_obj_align(STARTButton, LV_ALIGN_TOP_LEFT, 240, 180);
+  lv_obj_t *STARTButton = lv_obj_create(lv_scr_act());
 
-   lv_obj_set_size(STARTButton, 200, 50);
+  lv_obj_align(STARTButton, LV_ALIGN_TOP_LEFT, 140, 180);
 
-   lv_obj_set_style_radius(STARTButton, 20, 0);
+  lv_obj_set_size(STARTButton, 200, 50);
 
-   lv_obj_add_event_cb(STARTButton, Start_Diagnostics_Mode, LV_EVENT_RELEASED,
-                       NULL);
+  lv_obj_set_style_radius(STARTButton, 20, 0);
 
-   lv_obj_set_style_bg_color(STARTButton, lv_palette_main(LV_PALETTE_GREEN),
-                             LV_STATE_DEFAULT);
+  lv_obj_add_event_cb(STARTButton, Start_Diagnostics_Mode, LV_EVENT_RELEASED,
+                      NULL);
 
-   lv_obj_set_style_bg_color(STARTButton, lv_palette_darken(LV_PALETTE_GREEN,
- 4), LV_STATE_PRESSED);
- }*/
+  lv_obj_set_style_bg_color(STARTButton, lv_palette_main(LV_PALETTE_GREEN),
+                            LV_STATE_DEFAULT);
+
+  lv_obj_set_style_bg_color(STARTButton, lv_palette_darken(LV_PALETTE_GREEN, 4),
+                            LV_STATE_PRESSED);
+}
 
 void initialize() {
   lv_init();
-  // create_Startup_UI();
-  // while (!STARTED) {
-  //   delay(20);
-  // }
+  create_Startup_UI();
+  while (!STARTED) {
+    delay(20);
+  }
+  // tesing_Velocity_Bar();
   create_Motor_UI();
 }
 
