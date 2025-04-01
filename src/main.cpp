@@ -120,6 +120,14 @@ void create_Motor_UI() {
   detect_Port_Type(selectedPort);
 
   if (device_Type == "Motor") {
+    lv_obj_t *PortRightText;
+    PortRightText = lv_label_create(lv_scr_act());
+    lv_label_set_text(PortRightText, "Port +");
+    lv_obj_align_to(PortRightText, RightPortButton, LV_ALIGN_TOP_MID, 0, 40);
+    lv_obj_t *PortLeftText;
+    PortLeftText = lv_label_create(lv_scr_act());
+    lv_label_set_text(PortLeftText, "Port -");
+    lv_obj_align_to(PortLeftText, LeftPortButton, LV_ALIGN_TOP_MID, 0, 40);
     lv_obj_t *SpdUPButton = lv_obj_create(lv_scr_act()),
              *SpdDOWNButton = lv_obj_create(lv_scr_act()),
              *SpdRESETButton = lv_obj_create(lv_scr_act());
@@ -225,13 +233,16 @@ void create_Motor_UI() {
         SpdRESETButton, lv_palette_main(LV_PALETTE_YELLOW), LV_STATE_PRESSED);
 
     label = lv_label_create(SpdUPButton);
-    lv_label_set_text(label, "UP");
+    lv_obj_set_style_text_font(label, &lv_font_montserrat_30, 0);
+    lv_label_set_text(label, "^");
     lv_obj_center(label);
     label = lv_label_create(SpdDOWNButton);
-    lv_label_set_text(label, "DOWN");
+    lv_obj_set_style_text_font(label, &lv_font_montserrat_24, 0);
+    lv_label_set_text(label, "V");
     lv_obj_center(label);
     label = lv_label_create(SpdRESETButton);
-    lv_label_set_text(label, "STOP");
+    lv_obj_set_style_text_font(label, &lv_font_montserrat_24, 0);
+    lv_label_set_text(label, "BRAKE");
     lv_obj_center(label);
 
     title = lv_label_create(lv_scr_act());
@@ -265,6 +276,25 @@ void create_Motor_UI() {
     lv_label_set_text(motorTor, "Torque: ");
     lv_obj_align(motorTor, LV_ALIGN_TOP_LEFT, 25, 215);
   } else {
+    lv_obj_t *FailedLabel;
+    FailedLabel = lv_label_create(lv_scr_act());
+    lv_label_set_text(FailedLabel, "NO MOTOR CONNECTED");
+    lv_obj_align(FailedLabel, LV_ALIGN_TOP_LEFT, 240, 120);
+    lv_obj_center(FailedLabel);
+    lv_obj_set_style_text_font(FailedLabel, &lv_font_montserrat_36, 0);
+
+    lv_obj_t *FailedLabelPortAdivce;
+    FailedLabelPortAdivce = lv_label_create(lv_scr_act());
+    lv_label_set_text(FailedLabelPortAdivce, "Move On Bud");
+    lv_obj_align(FailedLabelPortAdivce, LV_ALIGN_TOP_LEFT, 240, 180);
+    lv_obj_align_to(FailedLabelPortAdivce, FailedLabel, LV_ALIGN_CENTER, -40,
+                    30);
+
+    lv_obj_set_style_text_font(FailedLabelPortAdivce, &lv_font_montserrat_24,
+                               0);
+
+    lv_obj_align(LeftPortButton, LV_ALIGN_TOP_LEFT, 180, 185);
+    lv_obj_align(RightPortButton, LV_ALIGN_TOP_LEFT, 260, 185);
   }
 }
 
