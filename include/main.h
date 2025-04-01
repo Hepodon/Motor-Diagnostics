@@ -40,7 +40,6 @@
  * You should add more #includes here
  */
 // #include "okapi/api.hpp"
-
 static void PortSelectLeft(lv_event_t *e);
 static void PortSelectRight(lv_event_t *e);
 static void GreenMotorSelect(lv_event_t *e);

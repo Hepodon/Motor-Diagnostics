@@ -7,10 +7,10 @@
 #include "liblvgl/misc/lv_area.h"
 #include "liblvgl/misc/lv_color.h"
 #include "liblvgl/widgets/lv_label.h"
-#include "liblvgl/widgets/lv_slider.h"
 #include "pros/device.hpp"
 #include "pros/misc.h"
 #include "pros/motors.hpp"
+#include <cstdio>
 
 using namespace pros;
 using namespace std;
@@ -20,7 +20,8 @@ Controller conInput(E_CONTROLLER_MASTER);
 float Motorgearset = 1;
 int speed = 0;
 int selectedPort = 1;
-lv_obj_t *title, *motorLabel, *motorRPM, *motorTemp, *motorPower, *motorTor;
+lv_obj_t *title, *motorLabel, *motorRPM, *motorTemp, *motorPower, *motorTor,
+    *motorRPMValue, *motorTempValue, *motorPowerValue, *motorTorValue;
 
 static void MotorSpeedUp(lv_event_t *e) { speed++; }
 static void MotorSpeedDown(lv_event_t *e) { speed--; }
@@ -49,7 +50,7 @@ void update_arc_color(lv_obj_t *arc, int value, int maxValue) {
   lv_obj_set_style_arc_color(arc, color, LV_PART_INDICATOR);
 }
 string device_Type = "NULL";
-
+string MotorType = "GREEN";
 int maxRPM = 200;
 
 // Function to create Port Selection and detect motor ports
@@ -58,6 +59,8 @@ void detect_Port_Type(int portNum) {
     device_Type = "Motor";
   } else if (Device::get_plugged_type(portNum) == DeviceType::imu) {
     device_Type = "Imu";
+  } else {
+    device_Type = "NULL";
   }
 }
 
@@ -68,27 +71,51 @@ void create_Motor_UI() {
   lv_obj_t *LeftPortButton = lv_obj_create(lv_scr_act()),
            *RightPortButton = lv_obj_create(lv_scr_act());
   lv_obj_t *label;
-  lv_obj_align(LeftPortButton, LV_ALIGN_TOP_LEFT, 200, 180);
-  lv_obj_align(RightPortButton, LV_ALIGN_TOP_LEFT, 260, 180);
+  lv_obj_align(LeftPortButton, LV_ALIGN_TOP_LEFT, 145, 15);
+  lv_obj_align(RightPortButton, LV_ALIGN_TOP_LEFT, 300, 15);
   lv_obj_set_size(LeftPortButton, 40, 55);
   lv_obj_set_size(RightPortButton, 40, 55);
   lv_obj_set_style_radius(LeftPortButton, 10, 0);
   lv_obj_set_style_radius(RightPortButton, 10, 0);
   lv_obj_add_event_cb(LeftPortButton, PortSelectLeft, LV_EVENT_CLICKED, NULL);
   lv_obj_add_event_cb(RightPortButton, PortSelectRight, LV_EVENT_CLICKED, NULL);
-  lv_obj_set_style_bg_color(LeftPortButton,
-                            lv_palette_main(LV_PALETTE_LIGHT_GREEN),
-                            LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_color(RightPortButton,
-                            lv_palette_main(LV_PALETTE_LIGHT_GREEN),
-                            LV_STATE_DEFAULT);
 
-  lv_obj_set_style_bg_color(LeftPortButton,
-                            lv_palette_darken(LV_PALETTE_LIGHT_GREEN, 5),
-                            LV_STATE_PRESSED);
-  lv_obj_set_style_bg_color(RightPortButton,
-                            lv_palette_darken(LV_PALETTE_LIGHT_GREEN, 5),
-                            LV_STATE_PRESSED);
+  if (MotorType == "GREEN") {
+    lv_obj_set_style_bg_color(LeftPortButton, lv_palette_main(LV_PALETTE_GREEN),
+                              LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(
+        RightPortButton, lv_palette_main(LV_PALETTE_GREEN), LV_STATE_DEFAULT);
+
+    lv_obj_set_style_bg_color(LeftPortButton,
+                              lv_palette_darken(LV_PALETTE_GREEN, 3),
+                              LV_STATE_PRESSED);
+    lv_obj_set_style_bg_color(RightPortButton,
+                              lv_palette_darken(LV_PALETTE_GREEN, 3),
+                              LV_STATE_PRESSED);
+  } else if (MotorType == "RED") {
+    lv_obj_set_style_bg_color(LeftPortButton, lv_palette_main(LV_PALETTE_RED),
+                              LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(RightPortButton, lv_palette_main(LV_PALETTE_RED),
+                              LV_STATE_DEFAULT);
+
+    lv_obj_set_style_bg_color(
+        LeftPortButton, lv_palette_darken(LV_PALETTE_RED, 3), LV_STATE_PRESSED);
+    lv_obj_set_style_bg_color(RightPortButton,
+                              lv_palette_darken(LV_PALETTE_RED, 3),
+                              LV_STATE_PRESSED);
+  } else if (MotorType == "BLUE") {
+    lv_obj_set_style_bg_color(LeftPortButton, lv_palette_main(LV_PALETTE_BLUE),
+                              LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(RightPortButton, lv_palette_main(LV_PALETTE_BLUE),
+                              LV_STATE_DEFAULT);
+
+    lv_obj_set_style_bg_color(LeftPortButton,
+                              lv_palette_darken(LV_PALETTE_BLUE, 3),
+                              LV_STATE_PRESSED);
+    lv_obj_set_style_bg_color(RightPortButton,
+                              lv_palette_darken(LV_PALETTE_BLUE, 3),
+                              LV_STATE_PRESSED);
+  }
 
   detect_Port_Type(selectedPort);
 
@@ -103,13 +130,13 @@ void create_Motor_UI() {
              *RedMotorGearboxButton = lv_obj_create(lv_scr_act()),
              *BlueMotorGearboxButton = lv_obj_create(lv_scr_act());
 
-    lv_obj_align(GreenMotorGearboxButton, LV_ALIGN_TOP_LEFT, 220, 40);
-    lv_obj_align(RedMotorGearboxButton, LV_ALIGN_TOP_LEFT, 220, 70);
-    lv_obj_align(BlueMotorGearboxButton, LV_ALIGN_TOP_LEFT, 220, 100);
+    lv_obj_align(GreenMotorGearboxButton, LV_ALIGN_TOP_LEFT, 190, 50);
+    lv_obj_align(RedMotorGearboxButton, LV_ALIGN_TOP_LEFT, 190, 110);
+    lv_obj_align(BlueMotorGearboxButton, LV_ALIGN_TOP_LEFT, 190, 170);
 
-    lv_obj_set_size(GreenMotorGearboxButton, 40, 20);
-    lv_obj_set_size(RedMotorGearboxButton, 40, 20);
-    lv_obj_set_size(BlueMotorGearboxButton, 40, 20);
+    lv_obj_set_size(GreenMotorGearboxButton, 100, 50);
+    lv_obj_set_size(RedMotorGearboxButton, 100, 50);
+    lv_obj_set_size(BlueMotorGearboxButton, 100, 50);
 
     lv_obj_set_style_radius(GreenMotorGearboxButton, 5, 0);
     lv_obj_set_style_radius(RedMotorGearboxButton, 5, 0);
@@ -137,7 +164,7 @@ void create_Motor_UI() {
     lv_obj_set_style_bg_color(GreenMotorGearboxButton,
                               lv_palette_darken(LV_PALETTE_GREEN, 3),
                               LV_STATE_PRESSED);
- 
+
     lv_obj_set_style_bg_color(RedMotorGearboxButton,
                               lv_palette_darken(LV_PALETTE_RED, 3),
                               LV_STATE_PRESSED);
@@ -147,8 +174,8 @@ void create_Motor_UI() {
 
     motorRPMArc = lv_arc_create(lv_scr_act());
     lv_arc_set_range(motorRPMArc, 0, maxRPM);
-    lv_obj_set_size(motorRPMArc, 75, 70);
-    lv_obj_align(motorRPMArc, LV_ALIGN_TOP_LEFT, 10, 25);
+    lv_obj_set_size(motorRPMArc, 325, 70);
+    lv_obj_align(motorRPMArc, LV_ALIGN_TOP_LEFT, 5, 15);
     lv_arc_set_rotation(motorRPMArc, 180);
     lv_arc_set_bg_angles(motorRPMArc, 0, 180);
     lv_arc_set_mode(motorRPMArc, LV_ARC_MODE_NORMAL);
@@ -157,16 +184,16 @@ void create_Motor_UI() {
     motorTempArc = lv_arc_create(lv_scr_act());
     lv_arc_set_range(motorTempArc, 300, 350);
     lv_obj_set_size(motorTempArc, 75, 70);
-    lv_obj_align(motorTempArc, LV_ALIGN_TOP_LEFT, 10, 75);
+    lv_obj_align(motorTempArc, LV_ALIGN_TOP_LEFT, 5, 75);
     lv_arc_set_rotation(motorTempArc, 180);
     // lv_arc_set_bg_angles(motorTempArc, -25, 205);
     lv_arc_set_bg_angles(motorTempArc, 0, 180);
     lv_arc_set_mode(motorTempArc, LV_ARC_MODE_NORMAL);
     lv_obj_clear_flag(motorTempArc, LV_OBJ_FLAG_CLICKABLE);
 
-    lv_obj_align(SpdUPButton, LV_ALIGN_TOP_LEFT, 320, 40);
-    lv_obj_align(SpdRESETButton, LV_ALIGN_TOP_LEFT, 320, 115);
-    lv_obj_align(SpdDOWNButton, LV_ALIGN_TOP_LEFT, 320, 160);
+    lv_obj_align(SpdUPButton, LV_ALIGN_TOP_LEFT, 350, 40);
+    lv_obj_align(SpdRESETButton, LV_ALIGN_TOP_LEFT, 350, 115);
+    lv_obj_align(SpdDOWNButton, LV_ALIGN_TOP_LEFT, 350, 160);
 
     lv_obj_set_size(SpdUPButton, 95, 75);
     lv_obj_set_size(SpdRESETButton, 95, 45);
@@ -217,12 +244,18 @@ void create_Motor_UI() {
     lv_obj_align(motorLabel, LV_ALIGN_TOP_MID, 0, 25);
 
     motorRPM = lv_label_create(lv_scr_act());
-    lv_label_set_text(motorRPM, "RPM: ");
+    lv_label_set_text(motorRPM, "RPM");
     lv_obj_align(motorRPM, LV_ALIGN_TOP_LEFT, 25, 35);
+    motorRPMValue = lv_label_create(lv_scr_act());
+    lv_label_set_text(motorRPMValue, "RPM");
+    lv_obj_align(motorRPMValue, LV_ALIGN_TOP_LEFT, 25, 50);
 
     motorTemp = lv_label_create(lv_scr_act());
-    lv_label_set_text(motorTemp, "Temp: ");
+    lv_label_set_text(motorTemp, "Temp");
     lv_obj_align(motorTemp, LV_ALIGN_TOP_LEFT, 25, 95);
+    motorTempValue = lv_label_create(lv_scr_act());
+    lv_label_set_text(motorTempValue, "");
+    lv_obj_align(motorTempValue, LV_ALIGN_TOP_LEFT, 25, 110);
 
     motorPower = lv_label_create(lv_scr_act());
     lv_label_set_text(motorPower, "Power: ");
@@ -232,7 +265,6 @@ void create_Motor_UI() {
     lv_label_set_text(motorTor, "Torque: ");
     lv_obj_align(motorTor, LV_ALIGN_TOP_LEFT, 25, 215);
   } else {
-    cube();
   }
 }
 
@@ -240,7 +272,7 @@ bool Braking = false;
 
 static void VelocityBrakeMode(lv_event_t *e) { Braking = true; }
 static void VelocityUNBrakeMode(lv_event_t *e) { Braking = false; }
-
+/*
 // Testing void function for Velocity Bar
 void tesing_Velocity_Bar() {
   lv_obj_clean(lv_scr_act()); // Clear the screen before updating
@@ -285,7 +317,7 @@ void tesing_Velocity_Bar() {
     delay(30);
   }
 }
-
+*/
 // Function to update the motor data
 void update_Motor_Data() {
   if (device_Type == "Motor") {
@@ -297,12 +329,12 @@ void update_Motor_Data() {
     lv_arc_set_value(motorTempArc, temp);
 
     update_arc_color(motorRPMArc, fabs(rpm), maxRPM);
-    update_arc_color(motorTempArc, temp, 350);
-    sprintf(buffer, "RPM: %.1d", rpm);
-    lv_label_set_text(motorRPM, buffer);
+    update_arc_color(motorTempArc, temp - 300, 50);
+    sprintf(buffer, "%.1d", rpm);
+    lv_label_set_text(motorRPMValue, buffer);
 
-    sprintf(buffer, "Temp: %.1dK", temp);
-    lv_label_set_text(motorTemp, buffer);
+    sprintf(buffer, "%.1dK", temp);
+    lv_label_set_text(motorTempValue, buffer);
 
     sprintf(buffer, "Power: %.1fW", Motor(selectedPort).get_power());
     lv_label_set_text(motorPower, buffer);
@@ -313,29 +345,33 @@ void update_Motor_Data() {
 }
 static void PortSelectLeft(lv_event_t *e) {
   speed = 0;
+  MotorType = "GREEN";
   Motor(selectedPort).brake();
   selectedPort = (selectedPort > 1) ? selectedPort - 1 : 20;
   create_Motor_UI();
 }
 static void PortSelectRight(lv_event_t *e) {
   speed = 0;
+  MotorType = "GREEN";
   Motor(selectedPort).brake();
   selectedPort = (selectedPort < 20) ? selectedPort + 1 : 1;
   create_Motor_UI();
 }
 static void GreenMotorSelect(lv_event_t *e) {
   maxRPM = 200;
+  MotorType = "GREEN";
   Motorgearset = 1;
   create_Motor_UI();
 }
 static void RedMotorSelect(lv_event_t *e) {
   maxRPM = 100;
+  MotorType = "RED";
   Motorgearset = 0.5;
   create_Motor_UI();
 }
 static void BlueMotorSelect(lv_event_t *e) {
   maxRPM = 600;
-
+  MotorType = "BLUE";
   Motorgearset = 3;
   create_Motor_UI();
 }

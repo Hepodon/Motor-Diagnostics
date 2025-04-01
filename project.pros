@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "Boring",
+    "project_name": "VEX VITALS - testing",
     "target": "v5",
     "templates": {
       "kernel": {
