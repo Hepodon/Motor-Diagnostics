@@ -3,7 +3,9 @@
 #include "liblvgl/core/lv_event.h"
 #include "liblvgl/core/lv_obj.h"
 #include "liblvgl/core/lv_obj_pos.h"
+#include "liblvgl/core/lv_obj_scroll.h"
 #include "liblvgl/core/lv_obj_style.h"
+#include "liblvgl/font/lv_font.h"
 #include "liblvgl/misc/lv_area.h"
 #include "liblvgl/misc/lv_color.h"
 #include "liblvgl/widgets/lv_label.h"
@@ -231,9 +233,12 @@ void create_Motor_UI() {
 
     lv_obj_set_style_bg_color(
         SpdRESETButton, lv_palette_main(LV_PALETTE_YELLOW), LV_STATE_PRESSED);
+    lv_obj_set_scrollbar_mode(SpdRESETButton, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_scrollbar_mode(SpdUPButton, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_scrollbar_mode(SpdDOWNButton, LV_SCROLLBAR_MODE_OFF);
 
     label = lv_label_create(SpdUPButton);
-    lv_obj_set_style_text_font(label, &lv_font_montserrat_30, 0);
+    lv_obj_set_style_text_font(label, &lv_font_montserrat_40, 0);
     lv_label_set_text(label, "^");
     lv_obj_center(label);
     label = lv_label_create(SpdDOWNButton);
@@ -244,6 +249,13 @@ void create_Motor_UI() {
     lv_obj_set_style_text_font(label, &lv_font_montserrat_24, 0);
     lv_label_set_text(label, "BRAKE");
     lv_obj_center(label);
+
+    lv_obj_t *MotorTypeTipJTT;
+    MotorTypeTipJTT = lv_label_create(lv_scr_act());
+    lv_label_set_text(MotorTypeTipJTT, "NO MOTOR CONNECTED");
+    lv_obj_align_to(MotorTypeTipJTT, BlueMotorGearboxButton, LV_ALIGN_CENTER, 50,
+                    45);
+    lv_obj_set_style_text_font(MotorTypeTipJTT, &lv_font_montserrat_10, 0);
 
     title = lv_label_create(lv_scr_act());
     lv_label_set_text(title, "Motor Status");
