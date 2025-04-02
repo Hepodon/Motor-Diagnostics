@@ -59,14 +59,126 @@ int maxRPM = 200;
 // Function to create Port Selection and detect motor ports
 void detect_Port_Type(int portNum) {
   if (Device::get_plugged_type(portNum) == DeviceType::motor) {
-    device_Type = "Motor";
+    device_Type = "MOTOR";
   } else if (Device::get_plugged_type(portNum) == DeviceType::imu) {
-    device_Type = "Imu";
+    device_Type = "INERTIAL";
   } else {
     device_Type = "NULL";
   }
 }
 
+// Screen Size
+#define SCREEN_WIDTH 480
+#define SCREEN_HEIGHT 240
+#define SCALE 100 // Increased scaling factor for visibility
+
+// Cube Points (8 corners of a 3D cube)
+struct Point3D {
+  float x, y, z;
+};
+
+// 2D Projection of 3D points
+struct Point2D {
+  int x, y;
+};
+
+// Define Cube Vertices (original structure, never modified)
+const Point3D cube_vertices[8] = {{-1, -1, -1}, {1, -1, -1}, {1, 1, -1},
+                                  {-1, 1, -1},  {-1, -1, 1}, {1, -1, 1},
+                                  {1, 1, 1},    {-1, 1, 1}};
+
+// Cube Edges
+const int cube_edges[12][2] = {{0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6},
+                               {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
+
+// Rotate point around X-axis
+void rotate_x(Point3D &p, float angle) {
+  float rad = angle * M_PI / 180.0;
+  float y = p.y * cos(rad) - p.z * sin(rad);
+  float z = p.y * sin(rad) + p.z * cos(rad);
+  p.y = y;
+  p.z = z;
+}
+
+// Rotate point around Y-axis
+void rotate_y(Point3D &p, float angle) {
+  float rad = angle * M_PI / 180.0;
+  float x = p.x * cos(rad) + p.z * sin(rad);
+  float z = -p.x * sin(rad) + p.z * cos(rad);
+  p.x = x;
+  p.z = z;
+}
+
+// Rotate point around Z-axis
+void rotate_z(Point3D &p, float angle) {
+  float rad = angle * M_PI / 180.0;
+  float x = p.x * cos(rad) - p.y * sin(rad);
+  float y = p.x * sin(rad) + p.y * cos(rad);
+  p.x = x;
+  p.y = y;
+}
+
+// Project 3D point to 2D
+Point2D project(Point3D p) {
+  return {(int)(SCREEN_WIDTH / 2 + p.x * SCALE),
+          (int)(SCREEN_HEIGHT / 2 - p.y * SCALE)};
+}
+
+// Draw Cube using LVGL Lines
+void draw_cube(lv_obj_t *screen, float roll, float pitch, float yaw) {
+  static lv_obj_t *lines[12] = {nullptr}; // Store line objects
+  Point3D rotated_vertices[8];
+
+  // Copy the original cube before modifying
+  for (int i = 0; i < 8; i++) {
+    rotated_vertices[i] = cube_vertices[i]; // Reset rotation each frame
+    rotate_x(rotated_vertices[i], roll);
+    rotate_y(rotated_vertices[i], pitch);
+    rotate_z(rotated_vertices[i], yaw);
+  }
+
+  // Draw all 12 edges of the cube
+  for (int i = 0; i < 12; i++) {
+    if (lines[i] == nullptr) {
+      lines[i] = lv_line_create(screen); // Create LVGL line if it doesn’t exist
+    }
+
+    Point2D p1 = project(rotated_vertices[cube_edges[i][0]]);
+    Point2D p2 = project(rotated_vertices[cube_edges[i][1]]);
+
+    static lv_point_t line_points[2]; // Store points for each line
+    line_points[0].x = p1.x;
+    line_points[0].y = p1.y;
+    line_points[1].x = p2.x;
+    line_points[1].y = p2.y;
+
+    lv_line_set_points(lines[i], line_points, 2); // Update line points
+
+    lv_obj_set_style_line_color(lines[i], lv_color_make(255, 255, 255),
+                                LV_PART_MAIN);
+    lv_obj_set_style_line_width(lines[i], 2, LV_PART_MAIN);
+  }
+}
+
+// Task to continuously update cube rotation
+void cube_task() {
+  lv_obj_t *screen = lv_scr_act();
+  static float roll_angle = 0, pitch_angle = 0, yaw_angle = 0;
+
+  while (true) {
+    float roll = conInput.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X) / 6.0;
+    float pitch = conInput.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) / 6.0;
+    float yaw = conInput.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) / 6.0;
+
+    roll_angle += roll;
+    pitch_angle += pitch;
+    yaw_angle += yaw;
+
+    draw_cube(screen, roll_angle, pitch_angle, yaw_angle);
+
+    pros::delay(50);
+  }
+}
 // Function to create the UI for the selected motor
 void create_Motor_UI() {
   lv_obj_clean(lv_scr_act()); // Clear the screen before updating
@@ -122,7 +234,7 @@ void create_Motor_UI() {
 
   detect_Port_Type(selectedPort);
 
-  if (device_Type == "Motor") {
+  if (device_Type == "MOTOR") {
     lv_obj_t *PortRightText;
     PortRightText = lv_label_create(lv_scr_act());
     lv_label_set_text(PortRightText, "Port +");
@@ -288,6 +400,8 @@ void create_Motor_UI() {
     motorTor = lv_label_create(lv_scr_act());
     lv_label_set_text(motorTor, "Torque: ");
     lv_obj_align(motorTor, LV_ALIGN_TOP_LEFT, 25, 215);
+  } else if (MotorType == "INERTIAL") {
+    cube_task();  
   } else {
     lv_obj_t *FailedLabel;
     FailedLabel = lv_label_create(lv_scr_act());
@@ -400,127 +514,13 @@ void create_Startup_UI() {
                             LV_STATE_PRESSED);
 }
 
-// Screen Size
-#define SCREEN_WIDTH 480
-#define SCREEN_HEIGHT 240
-#define SCALE 100 // Increased scaling factor for visibility
-
-// Cube Points (8 corners of a 3D cube)
-struct Point3D {
-  float x, y, z;
-};
-
-// 2D Projection of 3D points
-struct Point2D {
-  int x, y;
-};
-
-// Define Cube Vertices (original structure, never modified)
-const Point3D cube_vertices[8] = {{-1, -1, -1}, {1, -1, -1}, {1, 1, -1},
-                                  {-1, 1, -1},  {-1, -1, 1}, {1, -1, 1},
-                                  {1, 1, 1},    {-1, 1, 1}};
-
-// Cube Edges
-const int cube_edges[12][2] = {{0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6},
-                               {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
-
-// Rotate point around X-axis
-void rotate_x(Point3D &p, float angle) {
-  float rad = angle * M_PI / 180.0;
-  float y = p.y * cos(rad) - p.z * sin(rad);
-  float z = p.y * sin(rad) + p.z * cos(rad);
-  p.y = y;
-  p.z = z;
-}
-
-// Rotate point around Y-axis
-void rotate_y(Point3D &p, float angle) {
-  float rad = angle * M_PI / 180.0;
-  float x = p.x * cos(rad) + p.z * sin(rad);
-  float z = -p.x * sin(rad) + p.z * cos(rad);
-  p.x = x;
-  p.z = z;
-}
-
-// Rotate point around Z-axis
-void rotate_z(Point3D &p, float angle) {
-  float rad = angle * M_PI / 180.0;
-  float x = p.x * cos(rad) - p.y * sin(rad);
-  float y = p.x * sin(rad) + p.y * cos(rad);
-  p.x = x;
-  p.y = y;
-}
-
-// Project 3D point to 2D
-Point2D project(Point3D p) {
-  return {(int)(SCREEN_WIDTH / 2 + p.x * SCALE),
-          (int)(SCREEN_HEIGHT / 2 - p.y * SCALE)};
-}
-
-// Draw Cube using LVGL Lines
-void draw_cube(lv_obj_t *screen, float roll, float pitch, float yaw) {
-  static lv_obj_t *lines[12] = {nullptr}; // Store line objects
-  Point3D rotated_vertices[8];
-
-  // Copy the original cube before modifying
-  for (int i = 0; i < 8; i++) {
-    rotated_vertices[i] = cube_vertices[i]; // Reset rotation each frame
-    rotate_x(rotated_vertices[i], roll);
-    rotate_y(rotated_vertices[i], pitch);
-    rotate_z(rotated_vertices[i], yaw);
-  }
-
-  // Draw all 12 edges of the cube
-  for (int i = 0; i < 12; i++) {
-    if (lines[i] == nullptr) {
-      lines[i] = lv_line_create(screen); // Create LVGL line if it doesn’t exist
-    }
-
-    Point2D p1 = project(rotated_vertices[cube_edges[i][0]]);
-    Point2D p2 = project(rotated_vertices[cube_edges[i][1]]);
-
-    static lv_point_t line_points[2]; // Store points for each line
-    line_points[0].x = p1.x;
-    line_points[0].y = p1.y;
-    line_points[1].x = p2.x;
-    line_points[1].y = p2.y;
-
-    lv_line_set_points(lines[i], line_points, 2); // Update line points
-
-    lv_obj_set_style_line_color(lines[i], lv_color_make(255, 255, 255),
-                                LV_PART_MAIN);
-    lv_obj_set_style_line_width(lines[i], 2, LV_PART_MAIN);
-  }
-}
-
-// Task to continuously update cube rotation
-void cube_task(void *) {
-  lv_obj_t *screen = lv_scr_act();
-  static float roll_angle = 0, pitch_angle = 0, yaw_angle = 0;
-
-  while (true) {
-    float roll = conInput.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X) / 6.0;
-    float pitch = conInput.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) / 6.0;
-    float yaw = conInput.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) / 6.0;
-
-    roll_angle += roll;
-    pitch_angle += pitch;
-    yaw_angle += yaw;
-
-    draw_cube(screen, roll_angle, pitch_angle, yaw_angle);
-
-    pros::delay(50);
-  }
-}
-
 void initialize() {
   lv_init();
-  // pros::Task cube_update_task(cube_task);
-  create_Startup_UI();
-  while (!STARTED) {
-    delay(20);
-  }
-  create_Motor_UI();
+  // create_Startup_UI();
+  // while (!STARTED) {
+  //   delay(20);
+  // }
+  // create_Motor_UI();
 }
 
 void opcontrol() {
