@@ -120,8 +120,8 @@ void rotate_z(Point3D &p, float angle) {
 
 // Project 3D point to 2D
 Point2D project(Point3D p) {
-  return {(int)(SCREEN_WIDTH / 2 + p.x * SCALE),
-          (int)(SCREEN_HEIGHT / 2 - p.y * SCALE)};
+  return {(int)((float)SCREEN_WIDTH / 2 + p.x * SCALE),
+          (int)((float)SCREEN_HEIGHT / 2 - p.y * SCALE)};
 }
 
 // Draw Cube using LVGL Lines
@@ -486,21 +486,20 @@ static void BlueMotorSelect(lv_event_t *e) {
   Motorgearset = 3;
   create_Motor_UI();
 }
-bool STARTED = false;
-static void Start_Diagnostics_Mode(lv_event_t *e) { STARTED = true; }
+static void Start_Diagnostics_Mode(lv_event_t *e) { create_Motor_UI(); }
 void create_Startup_UI() {
 
   lv_obj_t *label = lv_scr_act();
   title = lv_label_create(lv_scr_act());
   lv_label_set_text(title, "VEX VITALS");
   lv_obj_set_style_text_font(title, &lv_font_montserrat_30, 0);
-  lv_obj_align(title, LV_ALIGN_TOP_LEFT, 150, 50);
+  lv_obj_center(title);
 
   lv_obj_t *STARTButton = lv_obj_create(lv_scr_act());
 
-  lv_obj_align(STARTButton, LV_ALIGN_TOP_LEFT, 140, 180);
-
   lv_obj_set_size(STARTButton, 200, 50);
+
+  lv_obj_align_to(STARTButton, NULL, LV_ALIGN_CENTER, 0, 100);
 
   lv_obj_set_style_radius(STARTButton, 20, 0);
 
@@ -510,17 +509,13 @@ void create_Startup_UI() {
   lv_obj_set_style_bg_color(STARTButton, lv_palette_main(LV_PALETTE_GREEN),
                             LV_STATE_DEFAULT);
 
-  lv_obj_set_style_bg_color(STARTButton, lv_palette_darken(LV_PALETTE_GREEN, 4),
+  lv_obj_set_style_bg_color(STARTButton, lv_palette_darken(LV_PALETTE_GREEN, 3),
                             LV_STATE_PRESSED);
 }
 
 void initialize() {
   lv_init();
-  // create_Startup_UI();
-  // while (!STARTED) {
-  //   delay(20);
-  // }
-  // create_Motor_UI();
+  create_Startup_UI();
 }
 
 void opcontrol() {
