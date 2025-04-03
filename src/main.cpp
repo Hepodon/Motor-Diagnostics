@@ -406,14 +406,12 @@ void create_Motor_UI() {
     lv_obj_t *FailedLabel;
     FailedLabel = lv_label_create(lv_scr_act());
     lv_label_set_text(FailedLabel, "NO MOTOR CONNECTED");
-    lv_obj_align(FailedLabel, LV_ALIGN_TOP_LEFT, 240, 120);
     lv_obj_center(FailedLabel);
     lv_obj_set_style_text_font(FailedLabel, &lv_font_montserrat_36, 0);
 
     lv_obj_t *FailedLabelPortAdivce;
     FailedLabelPortAdivce = lv_label_create(lv_scr_act());
     lv_label_set_text(FailedLabelPortAdivce, "Move On Bud");
-    lv_obj_align(FailedLabelPortAdivce, LV_ALIGN_TOP_LEFT, 240, 180);
     lv_obj_align_to(FailedLabelPortAdivce, FailedLabel, LV_ALIGN_CENTER, -40,
                     30);
 
