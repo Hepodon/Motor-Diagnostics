@@ -485,8 +485,9 @@ static void BlueMotorSelect(lv_event_t *e) {
   create_Motor_UI();
 }
 static void Start_Diagnostics_Mode(lv_event_t *e) { create_Motor_UI(); }
-void create_Startup_UI() {
 
+void initialize() {
+  lv_init();
   lv_obj_t *label = lv_scr_act();
   title = lv_label_create(lv_scr_act());
   lv_label_set_text(title, "VEX VITALS");
@@ -509,11 +510,6 @@ void create_Startup_UI() {
 
   lv_obj_set_style_bg_color(STARTButton, lv_palette_darken(LV_PALETTE_GREEN, 3),
                             LV_STATE_PRESSED);
-}
-
-void initialize() {
-  lv_init();
-  create_Startup_UI();
 }
 
 void opcontrol() {
